@@ -1,0 +1,45 @@
+{
+  "name": "px-headings-design",
+  "version": "1.0.3",
+  "authors": [
+    "General Electric",
+    "Harry Roberts <harry@csswizardry.com>"
+  ],
+  "description": "Headings gives you base-level heading sizes in the form of easy-to-apply classes.",
+  "main": "_base.headings.scss",
+  "keywords": [
+    "px",
+    "sass",
+    "headings"
+  ],
+  "homepage": "https://github.com/PredixDev/px-headings-design.git",
+  "private": false,
+  "ignore": [
+    "*.enc",
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "sass",
+    "*.md",
+    "scripts",
+    "github",
+    "gulpfile.js",
+    "monogram-wdmk.png",
+    "wct.conf.json",
+    "test",
+    "OSS_Notice.pdf"
+  ],
+  "dependencies": {
+    "px-colors-design": "^1.0.0",
+    "px-defaults-design": "^2.0.0",
+    "px-mixins-design": "^1.0.0"
+  },
+  "devDependencies": {
+    "px-starter-kit-design": "^1.0.0",
+    "px-sass-doc": "^1.0.0",
+    "px-demo": "^2.2.0"
+  },
+  "resolutions": {
+    "webcomponentsjs": "^0.7.24"
+  }
+}

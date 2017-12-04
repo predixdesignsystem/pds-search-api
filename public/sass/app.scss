@@ -1,0 +1,61 @@
+// Settings
+@import "px-colors-design/_settings.colors.scss";
+
+// Tools
+// ...
+
+// Generic
+@import "px-normalize-design/_generic.normalize.scss";
+@import "px-box-sizing-design/_generic.box-sizing.scss";
+@import "px-helpers-design/_generic.helpers.scss";
+
+// Base
+@import "px-flexbox-design/_base.flexbox.scss";
+@import "px-viewport-design/_base.viewport.scss";
+@import "px-headings-design/_base.headings.scss";
+
+// Meta
+// ...
+
+// Objects
+// ...
+
+// Component
+.app-title {
+  color: #09819c;
+  margin-top: 0;
+  font-weight: 400;
+}
+.app-results {
+  max-width: 900px;
+}
+
+.search-result {
+  display: flex;
+  padding: 1rem;
+  margin-bottom: .5rem;
+}
+.search-result-created-at {
+  text-transform: uppercase;
+  margin-top: 2rem;
+  margin-bottom: .5rem;
+}
+.search-result--some-found {
+  background-color: $status-green1;
+}
+.search-result--none-found {
+  background-color: $status-red1;
+}
+.search-result__results-count {
+  margin-left: auto;
+}
+.search-result__label {
+  margin: 0;
+}
+.search-result__value {
+  margin: 0;
+}
+
+// Trumps
+@import "px-spacing-responsive-design/_trumps.spacing-responsive.scss";
+@import "px-widths-responsive-design/_trumps.widths-responsive.scss";

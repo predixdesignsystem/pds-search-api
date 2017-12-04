@@ -1,0 +1,37 @@
+////
+/// PX-BOX-SIZING-DESIGN
+/// Global box-sizing options
+/// @group px-box-sizing-design
+////
+
+/**
+ * Sets the global `box-sizing` state to `border-box`.
+ *
+ * css-tricks.com/inheriting-box-sizing-probably-slightly-better-best-practice
+ * paulirish.com/2012/box-sizing-border-box-ftw
+ */
+
+/// @type Boolean [default] - If we have included this file, set a variable to tell the rest of Px that global `box-sizing: border-box` has been set.
+$inuit-global-border-box  : true;
+
+html {
+  box-sizing: border-box;
+}
+
+* {
+  &,
+  &:before,
+  &:after {
+    box-sizing: inherit;
+  }
+}
+
+/**
+ * the html and :host declarations cannot be adjacent to one other
+ * or cssmin will combine them into a single rule, breaking in
+ * Safari and Firefox.
+ */
+
+:host {/*! Comment to prevent cssmin munging this rule with html above and borking Safari */
+  box-sizing: border-box;
+}

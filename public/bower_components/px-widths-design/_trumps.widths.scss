@@ -1,0 +1,26 @@
+////
+/// PX-WIDTHS-DESIGN
+/// Defines helper classes for widths
+/// @group px-widths-design
+////
+
+/**
+ * A series of width helper classes that you can use to size things like grid
+ * systems. Classes can take a fraction-like format (e.g. `.u-2/3`) or a spoken-
+ * word format (e.g. `.u-2-of-3`).
+ */
+
+@import "px-widths-tools-design/_tools.widths.scss";
+
+/// By default we will create wholes, halves, thirds, quarters, and sixths. Predefine this Map to override.
+/// @group px-widths-design:variables:style
+/// @type List [default]
+$inuit-widths-columns: (
+    1,
+    2,
+    3,
+    4,
+    6
+) !default;
+
+@include inuit-widths($inuit-widths-columns);

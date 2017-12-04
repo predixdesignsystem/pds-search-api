@@ -1,0 +1,33 @@
+////
+/// PX-WIDTHS-RESPONSIVE-DESIGN
+/// Defines helper classes for responsive widths based on breakpoints
+/// @group px-widths-responsive-design
+////
+
+@import "px-helpers-design/_generic.helpers.scss";
+@import "px-widths-design/_trumps.widths.scss";
+
+/// By default we will create wholes, halves, thirds, quarters, and sixths. Predefine this Map to override.
+/// @group px-widths-responsive-design:variables:style
+/// @type List [default]
+/// @todo n/a
+$inuit-widths-columns-responsive: (
+    1,
+    2,
+    3,
+    4,
+    6,
+) !default;
+
+// Loop over our breakpoints defined in _settings.responsive.scss
+@each $breakpoint in $breakpoints {
+  // Get the name of the breakpoint.
+  $alias: nth($breakpoint, 1);
+  @include media-query($alias) {
+    // Loop through each of our column sizes and generate its responsive width
+    // classes.
+    @each $inuit-widths-column in $inuit-widths-columns-responsive {
+      @include inuit-widths($inuit-widths-column, -#{$alias});
+    }
+  }
+}

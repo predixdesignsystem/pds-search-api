@@ -1,0 +1,116 @@
+<!-- Common imports -->
+<link rel="import" href="../../polymer/polymer.html" />
+
+  <!-- Common demo imports -->
+  <link rel="import" href="../../px-sass-doc/px-sass-doc.html" />
+  <link rel="import" href="../css/px-widths-design-demo-styles.html" />
+
+<!-- Demo DOM module -->
+<dom-module id="px-widths-design-demo">
+  <template>
+  <!-- 0: Import the styles-->
+  <style include="px-widths-design-demo-styles" is="custom-style"></style>
+
+<!-- 1: Describe Module -->
+<px-sass-doc
+  module-name="px-widths-design"
+  description="The Predix UI Widths module is a series of width helper classes that you can use to size things like grid systems."
+  layer="objects"
+  sassdoc-path="sassdoc.json"
+  dependencies='[
+    "https://github.com/PredixDev/px-widths-tools-design"
+  ]'
+  selected-options="{{selectedOptions}}">
+
+<!-- 2: Set Options -->
+<px-sass-doc-option
+  option-name="Divisions"
+  choose-with="dropdown"
+  choices='[
+    "whole",
+    "halves",
+    "thirds",
+    "quarters",
+    "sixths"
+  ]'
+  default-choice="whole">
+</px-sass-doc-option>
+
+<!-- 3: Make HTML Demo -->
+<section data-slot="demoHTML">
+<div class$="{{layoutItemClasses}}"></div>
+</section>
+
+<!-- 4: Set Import Slot -->
+<section data-slot="import">
+{{importCode}}
+</section>
+
+<!-- 5: Set Usage HTML -->
+
+<section data-slot="usage">
+```
+<!-- Whole Division  -->
+<div class="u-1/1"></div>
+
+
+<!-- Halves Divisions  -->
+<div class="u-1/2"></div>
+
+
+<!-- Thirds Divisions  -->
+<div class="u-1/3"></div>
+
+
+<!-- Quarters Divisions  -->
+<div class="u-1/4"></div>
+
+
+<!-- Sixths Divisions  -->
+<div class="u-1/6"></div>
+```
+</section>
+
+</px-sass-doc>
+</template>
+
+</dom-module>
+
+<!-- 6: Handle selectedOptions, update demo -->
+<script>
+  Polymer({
+    is: 'px-widths-design-demo',
+
+    attached : function(){
+      var boundHandler = this._handleOptionsUpdated.bind(this);
+      this.addEventListener('px-sass-doc-options-updated', boundHandler)
+    },
+
+    detached : function(){
+      this.removeEventListener('px-sass-doc-options-updated', boundHandler);
+    },
+
+    _handleOptionsUpdated : function(evt) {
+      //call functions created below
+      this.layoutItemClasses = this._layoutItemClasses();
+      this.importCode = this._importCode();
+
+      // Wait, then tell the highlighter to run after dom-if restamps
+      this.async(function(){ this.fire('px-sass-doc-demo-updated', {}) }, 10);
+    },
+
+    _layoutItemClasses : function() {
+      var opts = this.selectedOptions || {};
+      if(opts.Divisions === "whole")     return "u-1/1";
+      if(opts.Divisions === "halves")    return "u-1/2";
+      if(opts.Divisions === "thirds")    return "u-1/3";
+      if(opts.Divisions === "quarters")  return "u-1/4";
+      if(opts.Divisions === "sixths")    return "u-1/6";
+    },
+
+    _importCode : function() {
+      return '@import "px-widths-design/_trumps.widths.scss";';
+    },
+
+  });
+</script>

@@ -1,0 +1,274 @@
+
+
+<!-- Common imports -->
+<link rel="import" href="../../polymer/polymer.html" />
+
+<!-- Common demo imports -->
+<link rel="import" href="../../px-sass-doc/px-sass-doc.html" />
+<link rel="import" href="../css/px-helpers-design-demo-styles.html" />
+
+<!-- Demo DOM module -->
+<dom-module id="px-helpers-design-demo">
+  <template>
+    <!-- 0: Import the styles-->
+    <style include="px-helpers-design-demo-styles" is="custom-style"></style>
+
+<!-- 1: Describe Module -->
+<px-sass-doc
+  module-name="px-helpers-design"
+  description="A series of helper classes for use throughout Predix UI."
+  layer="generic"
+  sassdoc-path="sassdoc.json"
+  dependencies='[
+    "https://github.com/PredixDev/px-colors-design"
+  ]'
+  selected-options="{{selectedOptions}}">
+
+<!-- 2: Set Options -->
+<px-sass-doc-option
+  option-name="Text"
+  choose-with="input"
+  option-value="{{inputValue}}">
+</px-sass-doc-option>
+
+<px-sass-doc-option
+  option-name="Align Text"
+  choose-with="dropdown"
+  choices='[
+    "None",
+    "Text Left",
+    "Text Center",
+    "Text Right"
+  ]'
+  default-choice="None">
+</px-sass-doc-option>
+<px-sass-doc-option
+  option-name="Floats"
+  choose-with="dropdown"
+  choices='[
+    "None",
+    "Float Right",
+    "Float Left"
+  ]'
+  default-choice="None">
+</px-sass-doc-option>
+<px-sass-doc-option
+  option-name="Cursor"
+  choose-with="dropdown"
+  choices='[
+    "None",
+    "Informative",
+    "Pointer"
+  ]'
+  default-choice="None">
+</px-sass-doc-option>
+<px-sass-doc-option
+  option-name="Hide"
+  choose-with="dropdown"
+  choices='[
+    "None",
+    "Hidden",
+    "Invisible",
+    "Visually Hidden"
+  ]'
+  default-choice="None">
+</px-sass-doc-option>
+<px-sass-doc-option
+  option-name="Muted Text"
+  choose-with="boolean"
+  default-choice="false">
+</px-sass-doc-option>
+<px-sass-doc-option
+  option-name="All Caps"
+  choose-with="boolean"
+  default-choice="false">
+</px-sass-doc-option>
+<px-sass-doc-option
+  option-name="Truncate"
+  choose-with="boolean"
+  default-choice="false">
+</px-sass-doc-option>
+<px-sass-doc-option
+  option-name="Proceed"
+  choose-with="boolean"
+  default-choice="false">
+</px-sass-doc-option>
+<px-sass-doc-option
+  option-name="Full Height"
+  choose-with="boolean"
+  default-choice="false">
+</px-sass-doc-option>
+
+<!-- 3: Make HTML Demo -->
+<section data-slot="demoHTML">
+
+  <div class$="{{cssClasses}}">{{inputValue}}</div>
+
+</section>
+
+<!-- N/A -->
+
+<!-- 4: Set Import Slot -->
+<section data-slot="import">
+@import "px-helpers-design/_generic.helpers.scss";
+</section>
+
+<!-- 4.1: API Intro -->
+<section data-slot="intro">
+Only use a helper class if an element/component doesn’t already have a class to which you could apply this styling, e.g. if you need to float `.main-nav` left then add `float:left;` to that ruleset as opposed to adding the `.float--left` class to the markup.
+
+Many of these classes carry `!important` as you will always want them to win out over other selectors.
+
+**This repository also contains mixins for responsive breakpoints and accessibility. Please refer to the code for more information.**
+</section>
+
+<!-- 5: Set Usage HTML -->
+<section data-slot="usage">
+  ```
+<!-- Text Align Left -->
+<div class="text--left">...</div>
+
+
+<!-- Text Align Center -->
+<div class="text--center">...</div>
+
+
+<!-- Text Align Right -->
+<div class="text--right">...</div>
+
+
+<!-- Float Left -->
+<div class="float--left">...</div>
+
+
+<!-- Float Right -->
+<div class="float--right">...</div>
+
+
+<!-- Informative -->
+<!-- Add a help cursor to any element that gives the user extra information on -->
+<div class="informative">...</div>
+
+
+<!-- Pointer -->
+<!-- Add a pointer cursor to any element, useful for on-click events -->
+<div class="pointer">...</div>
+
+
+<!-- Hidden -->
+<!-- Hide visually and from screen readers -->
+<div class="hidden">...</div>
+
+
+<!-- Invisible -->
+<!-- Hide visually and from screen readers, but maintain layout -->
+<div class="invisible">...</div>
+
+
+<!-- Visually Hidden -->
+<!-- Hide content off-screen without resorting to `display:none;` -->
+<!-- Useful for screen reader / accessibility use cases -->
+<div class="visuallyhidden">...</div>
+
+
+<!-- Muted Text -->
+<!-- Mute an object by reducing its opacity. -->
+<div class="muted">...</div>
+
+
+<!-- Capitalized Text -->
+<!-- Apply capital case to an element -->
+<div class="caps">...</div>
+
+<!-- Truncated Text -->
+<!-- Truncate a text string using an ellipsis -->
+<div class="truncate">...</div>
+
+<!-- Proceed -->
+<!-- Align items to the right where they imply progression/movement forward -->
+<div class="proceed">...</div>
+
+
+<!-- Full Height -->
+<!-- Set hieght to 100% with !important -->
+<div class="full-height">...</div>
+
+
+<!-- Example of using the media-query mixin and $breakpoints default values in your Sass -->
+.foo {
+  color: green;
+  @include media-query(palm-and-up) {
+    color: red;
+  }
+  @include media-query(lap-and-up) {
+    color: blue;
+  }
+  @include media-query(desk-and-up) {
+    color: salmon;
+  }
+}
+
+```
+</section>
+
+</px-sass-doc>
+</template>
+
+</dom-module>
+
+<!-- 6: Handle selectedOptions, update demo -->
+<script>
+  Polymer({
+    is: 'px-helpers-design-demo',
+
+    attached : function(){
+      var boundHandler = this._handleOptionsUpdated.bind(this);
+      this.addEventListener('px-sass-doc-options-updated', boundHandler);
+      this.inputValue = "This is a line of text inside of a box";
+    },
+
+    detached : function(){
+      this.removeEventListener('px-sass-doc-options-updated', boundHandler);
+    },
+
+    _handleOptionsUpdated : function(evt) {
+      //call functions created below
+      this.cssClasses = this._calcCssClasses();
+      this.importCode = this._importCode();
+
+      // Wait, then tell the highlighter to run after dom-if restamps
+      this.async(function(){ this.fire('px-sass-doc-demo-updated', {}) }, 10);
+    },
+
+    _calcCssClasses : function() {
+      var opts = this.selectedOptions || {}, strings = [];
+      if (opts["Align Text"] === "Text Left")      strings.push("text--left");
+      if (opts["Align Text"] === "Text Center")    strings.push("text--center");
+      if (opts["Align Text"] === "Text Right")     strings.push("text--right");
+
+      if (opts["Floats"] === "Float Left")     strings.push("float--left");
+      if (opts["Floats"] === "Float Right")    strings.push("float--right");
+
+      if (opts["Cursor"] === "Informative")    strings.push("informative");
+      if (opts["Cursor"] === "Pointer")    strings.push("pointer");
+
+      if (opts["Hide"] === "Hidden")    strings.push("hidden");
+      if (opts["Hide"] === "Invisible")    strings.push("invisible");
+      if (opts["Hide"] === "Visually Hidden")    strings.push("visuallyhidden");
+
+      if (opts["Muted Text"] === true)    strings.push("muted");
+      if (opts["All Caps"] === true)    strings.push("caps");
+      if (opts["Truncate"] === true)    strings.push("truncate");
+      if (opts["Proceed"] === true)    strings.push("proceed");
+      if (opts["Full Height"] === true)    strings.push("full-height");
+
+      return ("boxContainer " + strings.join(" ")).trim();
+    },
+
+    _importCode : function() {
+      return '@import "px-helpers-design/_generic.helpers.scss";';
+    },
+
+  });
+</script>
+<script>

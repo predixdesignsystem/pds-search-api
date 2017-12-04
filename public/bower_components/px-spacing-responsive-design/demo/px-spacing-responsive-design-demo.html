@@ -1,0 +1,226 @@
+<!-- Common imports -->
+<link rel="import" href="../../polymer/polymer.html" />
+
+  <!-- Common demo imports -->
+  <link rel="import" href="../../px-sass-doc/px-sass-doc.html" />
+  <link rel="import" href="../css/px-spacing-responsive-design-demo-styles.html" />
+
+<!-- Demo DOM module -->
+<dom-module id="px-spacing-responsive-design-demo">
+  <template>
+  <!-- 0: Import the styles-->
+  <style include="px-spacing-responsive-design-demo-styles" is="custom-style"></style>
+
+<!-- 1: Describe Module -->
+<px-sass-doc
+  module-name="px-spacing-responsive-design"
+  description="The Predix UI Spacing Responsive module is an extension of the default px-spacing-design module and provides breakpoint-based classes for nudging margins and paddings around responsively."
+  layer="trumps"
+  sassdoc-path="sassdoc.json"
+  dependencies='[
+    "https://github.com/PredixDev/px-spacing-design",
+    "https://github.com/PredixDev/px-helpers-design"
+  ]'
+  selected-options="{{selectedOptions}}">
+
+<!-- 2: Set Options -->
+<px-sass-doc-option
+  option-name="Margin Size"
+  choose-with="dropdown"
+  choices='[
+    "tiny",
+    "small",
+    "regular (default)",
+    "large",
+    "huge",
+    "none",
+    "negative-tiny",
+    "negative-small",
+    "negative-regular",
+    "negative-large",
+    "negative-huge"
+  ]'
+  default-choice="regular (default)">
+</px-sass-doc-option>
+
+<px-sass-doc-option
+  option-name="Margin Direction"
+  choose-with="dropdown"
+  choices='[
+    "all (default)",
+    "top",
+    "right",
+    "bottom",
+    "left",
+    "vertical",
+    "horizontal"
+  ]'
+  default-choice="all (default)">
+</px-sass-doc-option>
+
+<px-sass-doc-option
+  option-name="Padding Size"
+  choose-with="dropdown"
+  choices='[
+    "none",
+    "tiny",
+    "small",
+    "regular (default)",
+    "large",
+    "huge"
+  ]'
+  default-choice="regular (default)">
+</px-sass-doc-option>
+
+<px-sass-doc-option
+  option-name="Padding Direction"
+  choose-with="dropdown"
+  choices='[
+    "all (default)",
+    "top",
+    "right",
+    "bottom",
+    "left",
+    "vertical",
+    "horizontal"
+  ]'
+  default-choice="all (default)">
+</px-sass-doc-option>
+
+<px-sass-doc-option
+  option-name="Reverse RTL"
+  choose-with="boolean">
+</px-sass-doc-option>
+
+<px-sass-doc-option
+  option-name="Breakpoint"
+  choose-with="dropdown"
+  choices='[
+    "desk",
+    "portable",
+    "lap-and-up",
+    "lap",
+    "palm"
+  ]'
+  default-choice="desk">
+</px-sass-doc-option>
+
+<!-- 3: Make HTML Demo -->
+<section data-slot="demoHTML" style="border: 1px solid black; opacity: 0.5;width:max-content" dir="{{direction}}">
+<div id="parent" class$="{{divClasses}}">
+  <div id="child"></div>
+</div>
+</section>
+
+<!-- 4: Set Import Slot -->
+<section data-slot="import">
+{{importCode}}
+</section>
+
+<!-- 5: Set Usage HTML -->
+<section data-slot="usage">
+For each "breakpoint" set in px-helpers-design [$breakpoint list](https://github.com/PredixDev/px-helpers-design/blob/master/_generic.helpers.scss#L23-L30), a class will be appended i.e. u-[breakpoint-name]-classname, where the classname follows the following convention. Margin dimensions are set in the Predix UI [spacing-design](https://github.com/PredixDev/px-spacing-design) module.
+```
+.u-[breakpoint]-[negative][type][direction][size]
+```
+</section>
+
+</px-sass-doc>
+</template>
+
+</dom-module>
+
+<!-- 6: Handle selectedOptions, update demo -->
+<script>
+  Polymer({
+    is: 'px-spacing-responsive-design-demo',
+
+    attached : function(){
+      var boundHandler = this._handleOptionsUpdated.bind(this);
+      this.addEventListener('px-sass-doc-options-updated', boundHandler)
+    },
+
+    detached : function(){
+      this.removeEventListener('px-sass-doc-options-updated', boundHandler);
+    },
+
+    _handleOptionsUpdated: function(evt) {
+      this.importCode = this._importCode();
+      this.divClasses = this._divClasses();
+      this.direction = this._direction();
+
+      // Wait, then tell the highlighter to run after dom-if restamps
+      this.async(function(){ this.fire('px-sass-doc-demo-updated', {}) }, 10);
+    },
+
+    _divClasses: function() {
+      var opts = this.selectedOptions || {}, strings = [], margin="u-", padding="u-";
+                                                        margin+=opts.Breakpoint;
+      if(opts["Margin Size"].indexOf('negative') > -1)  margin+="-";
+                                                        margin+="-m"
+      if(opts["Margin Direction"] === "top")            margin+="t";
+      if(opts["Margin Direction"] === "right")          margin+="r";
+      if(opts["Margin Direction"] === "bottom")         margin+="b";
+      if(opts["Margin Direction"] === "left")           margin+="l";
+      if(opts["Margin Direction"] === "vertical")       margin+="v";
+      if(opts["Margin Direction"] === "horizontal")     margin+="h";
+      if(opts["Margin Size"] === "none")                margin+="0";
+      if(opts["Margin Size"].indexOf('tiny') > -1)      margin+="--";
+      if(opts["Margin Size"].indexOf('small') > -1)     margin+="-";
+      if(opts["Margin Size"].indexOf('large') > -1)     margin+="+";
+      if(opts["Margin Size"].indexOf('huge') > -1)      margin+="++";
+                                                        padding+=opts.Breakpoint;
+                                                        padding+="-p";
+      if(opts["Padding Direction"] === "top")           padding+="t";
+      if(opts["Padding Direction"] === "right")         padding+="r";
+      if(opts["Padding Direction"] === "bottom")        padding+="b";
+      if(opts["Padding Direction"] === "left")          padding+="l";
+      if(opts["Padding Direction"] === "vertical")      padding+="v";
+      if(opts["Padding Direction"] === "horizontal")    padding+="h";
+      if(opts["Padding Size"] === "none")               padding+="0";
+      if(opts["Padding Size"] === 'tiny')               padding+="--";
+      if(opts["Padding Size"] === 'small')              padding+="-";
+      if(opts["Padding Size"] === 'large')              padding+="+";
+      if(opts["Padding Size"] === 'huge')               padding+="++";
+
+    strings.push(margin);
+    strings.push(padding);
+    return strings.join(" ").trim();
+    },
+
+    _importCode: function() {
+      var opts = this.selectedOptions || {}, strings = [];
+      if (opts["Margin Size"] === "negative-huge")      strings.push("$inuit-enable-responsive-margins--negative-huge : true;");
+      if (opts["Margin Size"] === "negative-large")     strings.push("$inuit-enable-responsive-margins--negative-large : true;");
+      if (opts["Margin Size"] === "negative")           strings.push("$inuit-enable-responsive-margins--negative : true;");
+      if (opts["Margin Size"] === "negative-small")     strings.push("$inuit-enable-responsive-margins--negative-small : true;");
+      if (opts["Margin Size"] === "negative-tiny")      strings.push("$inuit-enable-responsive-margins--negative-tiny : true;");
+      if (opts["Margin Size"] === "none")               strings.push("$inuit-enable-responsive-margins--none : true;");
+      if (opts["Margin Size"] === "tiny")               strings.push("$inuit-enable-responsive-margins--tiny : true;");
+      if (opts["Margin Size"] === "small")              strings.push("$inuit-enable-responsive-margins--small : true;");
+      if (opts["Margin Size"] === "regular (default)")  strings.push("$inuit-enable-responsive-margins : true;");
+      if (opts["Margin Size"] === "large")              strings.push("$inuit-enable-responsive-margins--large : true;");
+      if (opts["Margin Size"] === "huge")               strings.push("$inuit-enable-responsive-margins--huge : true;");
+      if (opts["Reverse RTL"] === true)                 strings.push("$inuit-enable-responsive-margins--rtl : true;");
+      if (opts["Padding Size"] === "none")              strings.push("$inuit-enable-responsive-paddings--none : true;");
+      if (opts["Padding Size"] === "tiny")              strings.push("$inuit-enable-responsive-paddings--tiny : true;");
+      if (opts["Padding Size"] === "small")             strings.push("$inuit-enable-responsive-paddings--small : true;");
+      if (opts["Padding Size"] === "regular (default)") strings.push("$inuit-enable-responsive-paddings : true;");
+      if (opts["Padding Size"] === "large")             strings.push("$inuit-enable-responsive-paddings--large : true;");
+      if (opts["Padding Size"] === "huge")              strings.push("$inuit-enable-responsive-paddings--huge : true;");
+      if (opts["Reverse RTL"] === true)                 strings.push("$inuit-enable-responsive-paddings--rtl : true;");
+      return (strings.join("\n") + "\n@import 'px-spacing-responsive-design/_trumps.spacing-responsive.scss';").trim();
+    },
+
+    _direction: function() {
+    var opts = this.selectedOptions || {};
+    if(opts["Reverse RTL"] === true) {
+      return 'rtl';
+    }
+    else {
+      return 'ltr';
+    }
+  }
+
+  });
+</script>

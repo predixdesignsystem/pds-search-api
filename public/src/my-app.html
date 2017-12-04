@@ -1,0 +1,195 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../bower_components/polymer/polymer-element.html"/>
+<link rel="import" href="../bower_components/polymer/lib/elements/dom-repeat.html"/>
+<link rel="import" href="../bower_components/polymer/lib/elements/dom-if.html"/>
+<link rel="import" href="../bower_components/px-theme/px-theme-styles.html"/>
+
+<link rel="import" href="../css/app-styles.html">
+
+<dom-module id="my-app">
+  <template>
+    <style include="px-theme-styles"></style>
+    <style include="app-styles"></style>
+    <style>
+      :host {
+        display: block;
+        padding: 3rem;
+        transition: background-color 0.2s;
+        background-color: transparent;
+      }
+      :host([updated]) {
+        background-color: #e6f5ff; /* $status-blue1 */
+      }
+    </style>
+
+    <h1 class="app-title gamma">Realtime searches on predix-ui.com</h1>
+
+    <div class="app-results">
+      <template is="dom-repeat" items="[[searches]]" as="search">
+        <template is="dom-if" if="[[_createdAtDiffThanLast(search.createdAt, index, searches)]]">
+          <p class="zeta search-result-created-at">[[search.createdAt]]</p>
+        </template>
+        <div class$="search-result [[_getSearchResultsCountClass(search.resultsCount)]]">
+          <div class="search-result__term">
+            <p class="label search-result__label">Term</p>
+            <p class="delta search-result__value">[[search.term]]</p>
+          </div>
+          <div class="search-result__results-count">
+            <p class="label search-result__label"># of Results</p>
+            <p class="delta search-result__value">[[search.resultsCount]]</p>
+          </div>
+        </div>
+      </template>
+    </div>
+  </template>
+
+  <script>
+    (() => {
+      // Gesture events like tap and track generated from touch will not be
+      // preventable, allowing for better scrolling performance.
+      Polymer.setPassiveTouchGestures(true);
+
+      class MyApp extends Polymer.Element {
+        static get is() { return 'my-app'; }
+
+        static get properties() {
+          return {
+            searches: {
+              type: Array,
+              value: () => []
+            },
+            updated: {
+              type: Boolean,
+              value: false,
+              reflectToAttribute: true
+            }
+          };
+        }
+
+        connectedCallback() {
+          super.connectedCallback();
+
+          /* Listen for new search results and add them to the page */
+          const searchRef = firebase.database().ref('/search');
+          searchRef.on('child_added', data => {
+            let {term, results, resultsCount, _createdAt} = data.val();
+            this.searches = [{
+              term,
+              results,
+              resultsCount,
+              _createdAt,
+              createdAt: fromNow(_createdAt)
+            }].concat(this.searches);
+
+            if (!this.updated) {
+              this.updated = true;
+              setTimeout(() => {
+                this.updated = false;
+              }, 1000)
+            }
+          });
+
+          /* Update the `createdAt` strings every minute */
+          setInterval(() => {
+            console.log('updating;')
+            this.searches = this.searches.map(search => {
+              search.createdAt = fromNow(search._createdAt);
+              return search;
+            });
+          }, 60000);
+        }
+
+        _getSearchResultsCountClass(count) {
+          if (count > 0) {
+            return 'search-result--some-found';
+          }
+          return 'search-result--none-found';
+        }
+
+        _createdAtDiffThanLast(createdAt, currentIndex, searches) {
+          if (currentIndex === 0) {
+            return true;
+          }
+          if (createdAt !== searches[currentIndex-1].createdAt) {
+            return true;
+          }
+          return false;
+        }
+      }
+
+      window.customElements.define(MyApp.is, MyApp);
+
+      /**
+       * Implements all the behaviors of moment.fromNow(). Pass a
+       * valid JavaScript Date object and the method will return the
+       * time that has passed since that date in a human-readable
+       * format. Passes the moment test suite for `fromNow()`.
+       * See: https://momentjs.com/docs/#/displaying/fromnow/
+       *
+       * @example
+       *
+       *     var pastDate = new Date('2017-10-01T02:30');
+       *     var message = fromNow(pastDate);
+       *     //=> '2 days ago'
+       *
+       * @param  {Date} Native JavaScript Date object
+       * @return {string}
+       */
+      function fromNow(date) {
+        var seconds = Math.floor((new Date() - date) / 1000);
+        var years = Math.floor(seconds / 31536000);
+        var months = Math.floor(seconds / 2592000);
+        var days = Math.floor(seconds / 86400);
+
+        if (days > 548) {
+          return years + ' years ago';
+        }
+        if (days >= 320 && days <= 547) {
+          return 'a year ago';
+        }
+        if (days >= 45 && days <= 319) {
+          return months + ' months ago';
+        }
+        if (days >= 26 && days <= 45) {
+          return 'a month ago';
+        }
+
+        var hours = Math.floor(seconds / 3600);
+
+        if (hours >= 36 && days <= 25) {
+          return days + ' days ago';
+        }
+        if (hours >= 22 && hours <= 35) {
+          return 'a day ago';
+        }
+
+        var minutes = Math.floor(seconds / 60);
+
+        if (minutes >= 90 && hours <= 21) {
+          return hours + ' hours ago';
+        }
+        if (minutes >= 45 && minutes <= 89) {
+          return 'an hour ago';
+        }
+        if (seconds >= 90 && minutes <= 44) {
+          return minutes + ' minutes ago';
+        }
+        if (seconds >= 45 && seconds <= 89) {
+          return 'a minute ago';
+        }
+        if (seconds >= 0 && seconds <= 45) {
+          return 'a few seconds ago';
+        }
+      }
+    })();
+  </script>
+</dom-module>

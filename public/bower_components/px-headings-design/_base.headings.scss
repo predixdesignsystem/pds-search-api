@@ -1,0 +1,182 @@
+////
+/// PX-HEADINGS-DESIGN
+/// Defines base headings styles
+/// @group px-headings-design
+////
+
+@import "px-defaults-design/_settings.defaults.scss";
+@import "px-mixins-design/_tools.mixins.scss";
+@import "px-colors-design/_settings.colors.scss";
+
+/// Sets a prepended namespace for all generated classes.
+/// @group px-headings-design:variables:style
+/// @type String [default]
+/// @todo n/a
+$inuit-headings-namespace   : $inuit-namespace !default;
+
+/// Sets the size for the h1 class `.alpha`. Should be a number in pixels or rems.
+/// @group px-headings-design:variables:style
+/// @type Number [default]
+/// @todo n/a
+$inuit-heading-size-1       : 75px !default;
+
+/// Sets the size for the h2 class `.beta`. Should be a number in pixels or rems.
+/// @group px-headings-design:variables:style
+/// @type Number [default]
+/// @todo n/a
+$inuit-heading-size-2       : 60px !default;
+
+/// Sets the size for the h3 class `.gamma`. Should be a number in pixels or rems.
+/// @group px-headings-design:variables:style
+/// @type Number [default]
+/// @todo n/a
+$inuit-heading-size-3       : 45px !default;
+
+/// Sets the size for the h4 class `.delta`. Should be a number in pixels or rems.
+/// @group px-headings-design:variables:style
+/// @type Number [default]
+/// @todo n/a
+$inuit-heading-size-4       : 30px !default;
+
+/// Sets the size for the h5 class `.epsilon`. Should be a number in pixels or rems.
+/// @group px-headings-design:variables:style
+/// @type Number [default]
+/// @todo n/a
+$inuit-heading-size-5       : 20px !default;
+
+/// Sets the size for the h6 class `.zeta`. Should be a number in pixels or rems.
+/// @group px-headings-design:variables:style
+/// @type Number [default]
+/// @todo n/a
+$inuit-heading-size-6       : 12px !default;
+
+/// Sets letter-spacing (kerning) on all caps text
+/// @group px-headings-design:variables:style
+/// @type Number [default]
+/// @todo --px-headings-letter-spacing
+$inuit-letter-spacing--caps                    : var(--px-headings-letter-spacing, 0.3px) !default;
+
+/// Page heading font color
+/// @group px-headings-design:variables:style
+/// @type Color [default]
+/// @todo --px-headings-heading-page-color
+$inuit-heading-page-color                      : var(--px-headings-heading-page-color, $gray15) !default;
+
+/// Section heading font color
+/// @group px-headings-design:variables:style
+/// @type Color [default]
+/// @todo --px-headings-heading-section-color
+$inuit-heading-section-color                   : var(--px-headings-heading-section-color, $gray10) !default;
+
+/// Subsection heading font color
+/// @group px-headings-design:variables:style
+/// @type Color [default]
+/// @todo --px-headings-heading-subsection-color
+$inuit-heading-subsection-color               : var(--px-headings-heading-subsection-color, $gray15) !default;
+
+/// Subsection heading background color
+/// @group px-headings-design:variables:style
+/// @type Color [default]
+/// @todo --px-headings-heading-subsection-background
+$inuit-heading-subsection-background          : var(--px-headings-heading-subsection-background, rgba($gray8,0.15)) !default;
+
+/// Label font color
+/// @group px-headings-design:variables:style
+/// @type Color [default]
+/// @todo --px-headings-label-color
+$inuit-heading-label-color                     : var(--px-headings-label-color, $gray10) !default;
+
+/// Value font color
+/// @group px-headings-design:variables:style
+/// @type Color [default]
+/// @todo --px-headings-value-color
+$inuit-heading-value-color                     : var(--px-headings-value-color, $gray15) !default;
+
+
+
+/// Heading size 1 : 75px
+.#{$inuit-headings-namespace}alpha,
+%#{$inuit-headings-namespace}alpha {
+  @include inuit-font-size($inuit-heading-size-1);
+  font-weight: normal;
+}
+
+/// Heading size 2 : 60px
+.#{$inuit-headings-namespace}beta,
+%#{$inuit-headings-namespace}beta {
+  @include inuit-font-size($inuit-heading-size-2);
+  font-weight: normal;
+}
+
+/// Heading size 3 : 45px
+.#{$inuit-headings-namespace}gamma,
+%#{$inuit-headings-namespace}gamma {
+  @include inuit-font-size($inuit-heading-size-3);
+  font-weight: normal;
+}
+
+/// Heading size 4 : 30px
+.#{$inuit-headings-namespace}delta,
+%#{$inuit-headings-namespace}delta {
+  @include inuit-font-size($inuit-heading-size-4);
+  font-weight: normal;
+}
+
+/// Heading size 5 : 20px
+.#{$inuit-headings-namespace}epsilon,
+%#{$inuit-headings-namespace}epsilon {
+  @include inuit-font-size($inuit-heading-size-5);
+  font-weight: normal;
+}
+
+/// Heading size 6 : 12px
+.#{$inuit-headings-namespace}zeta,
+%#{$inuit-headings-namespace}zeta {
+  @include inuit-font-size($inuit-heading-size-6);
+  font-weight: normal;
+}
+
+
+/// Page Header
+.#{$inuit-headings-namespace}heading--page,
+%#{$inuit-headings-namespace}heading--page {
+  @include inuit-font-size($inuit-heading-size-4);
+  color: $inuit-heading-page-color;
+}
+
+/// Section Header
+.#{$inuit-headings-namespace}heading--section,
+%#{$inuit-headings-namespace}heading--section {
+  @include inuit-font-size($inuit-heading-size-5);
+  color: $inuit-heading-section-color;
+  text-transform: uppercase;
+}
+
+/// Sub-Section Header
+.#{$inuit-headings-namespace}heading--subsection,
+%#{$inuit-headings-namespace}heading--subsection {
+  @include inuit-font-size($inuit-base-font-size);
+  color: $inuit-heading-subsection-color;
+  background-color: $inuit-heading-subsection-background;
+  text-transform: uppercase;
+  letter-spacing: $inuit-letter-spacing--caps;
+  display: flex;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+/// Label Header
+.#{$inuit-headings-namespace}label,
+%#{$inuit-headings-namespace}label {
+  @include inuit-font-size($inuit-heading-size-6);
+  color: $inuit-heading-label-color;
+  text-transform: uppercase;
+  letter-spacing: $inuit-letter-spacing--caps;
+}
+
+/// Value Header
+.#{$inuit-headings-namespace}value,
+%#{$inuit-headings-namespace}value {
+  @include inuit-font-size($inuit-base-font-size);
+  color: $inuit-heading-value-color;
+}

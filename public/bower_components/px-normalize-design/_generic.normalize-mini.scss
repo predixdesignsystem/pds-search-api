@@ -1,0 +1,27 @@
+/**
+ * A tiny subset of the Predix UI normalize Sass module that is meant for use
+ * when building components that don't need a ton of resets. These styles are
+ * all scope to `:host` so they will work inside the Shadow DOM of a component
+ * that imports them.
+ *
+ * Only does the following
+ * 1. Sets the component text color based on $inuit-base-text-color.
+ * 2. Sets the component text line-height based on $inuit-base-line-height and
+ *    $inuit-base-font-size.
+ * 3. Prevent certain mobile browsers from automatically zooming fonts.
+ * 4. Fonts on OSX will look more consistent with other systems that do not
+ *    render text using sub-pixel anti-aliasing.
+ *
+ * Some rules based on normalize.css v3.0.2 | MIT License | git.io/normalize
+ */
+
+// Needed to define required $inuit-base-* Sass variables
+@import "px-defaults-design/_settings.defaults.scss";
+
+:host {
+  color: $inuit-base-text-color; /* [1] */
+  line-height: $inuit-base-line-height / $inuit-base-font-size; /* [2] */
+  text-size-adjust: 100%; /* [3] */
+  -moz-osx-font-smoothing: grayscale; /* [4] */
+  -webkit-font-smoothing: antialiased; /* [4] */
+}

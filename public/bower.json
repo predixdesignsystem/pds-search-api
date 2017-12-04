@@ -1,0 +1,21 @@
+{
+  "name": "pds-api-viewer",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "firebase": "^4.6.1",
+    "polymer": "^2.2.0",
+    "webcomponentsjs": "^1.0.20",
+    "px-theme": "^3.1.4"
+  },
+  "devDependencies": {
+    "px-starter-kit-design": "^1.0.1",
+    "px-headings-design": "^1.0.3"
+  }
+}

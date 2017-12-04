@@ -1,0 +1,64 @@
+{
+  "name": "px-starter-kit-design",
+  "version": "1.0.1",
+  "authors": [
+    "General Electric",
+    "Harry Roberts <harry@csswizardry.com>"
+  ],
+  "description": "A simple, stripped back Sass starter kit for Predix UI",
+  "main": "bower.json",
+  "keywords": [
+    "px",
+    "sass",
+    "starter kit"
+  ],
+  "homepage": "https://github.com/PredixDev/px-starter-kit-design.git",
+  "private": false,
+  "ignore": [
+    "*.enc",
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "sass",
+    "*.md",
+    "scripts",
+    "github",
+    "gulpfile.js",
+    "monogram-wdmk.png",
+    "wct.conf.json",
+    "test",
+    "OSS_Notice.pdf",
+    "*.png",
+    "CONTRIBUTING.md",
+    "LICENSE.md"
+  ],
+  "dependencies": {
+    "px-box-sizing-design": "^1.0.0",
+    "px-colors-design": "^1.0.0",
+    "px-flexbox-design": "^1.0.0",
+    "px-helpers-design": "^1.0.0",
+    "px-normalize-design": "^1.0.0",
+    "px-spacing-responsive-design": "^1.0.0",
+    "px-viewport-design": "^1.0.0",
+    "px-widths-responsive-design": "^1.0.0"
+  },
+  "devDependencies": {
+    "polymer": "^1.9.0",
+    "px-theme": "^3.0.0",
+    "px-sass-doc": "^1.0.0",
+    "px-demo": "^2.2.0"
+  },
+  "resolutions": {
+    "webcomponentsjs": "^0.7.24"
+  },
+  "_release": "1.0.1",
+  "_resolution": {
+    "type": "version",
+    "tag": "v1.0.1",
+    "commit": "f9b3b7683ac294875d53cbb0e4d379f411e2d64b"
+  },
+  "_source": "https://github.com/predixDev/px-starter-kit-design.git",
+  "_target": "^1.0.1",
+  "_originalSource": "px-starter-kit-design",
+  "_direct": true
+}

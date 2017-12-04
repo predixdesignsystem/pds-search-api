@@ -1,0 +1,56 @@
+{
+  "name": "px-theme",
+  "version": "3.1.4",
+  "main": [
+    "px-theme.html"
+  ],
+  "ignore": [
+    "*.enc",
+    "**/.*",
+    "bower_components",
+    "node_modules",
+    "gulpfile.js",
+    "sass",
+    "*.md",
+    "test",
+    "scripts",
+    ".github",
+    "OSS_Notice.pdf",
+    "wct.conf.json",
+    "*.png",
+    "npm-debug.log",
+    "package.json",
+    "yarn.lock"
+  ],
+  "dependencies": {
+    "polymer": "1.9 - 2",
+    "px-typography-design": "^2.0.0"
+  },
+  "devDependencies": {
+    "px-colors-design": "^1.0.0"
+  },
+  "resolutions": {
+    "webcomponentsjs": "^1.0.0"
+  },
+  "variants": {
+    "1.x": {
+      "dependencies": {
+        "polymer": "^1.9.0"
+      },
+      "resolutions": {
+        "webcomponentsjs": "^0.7"
+      }
+    }
+  },
+  "homepage": "https://github.com/PredixDev/px-theme",
+  "_release": "3.1.4",
+  "_resolution": {
+    "type": "version",
+    "tag": "v3.1.4",
+    "commit": "99f604f2d93c359d71d114403a670e10715a4a4a"
+  },
+  "_source": "https://github.com/PredixDev/px-theme.git",
+  "_target": "^3.1.4",
+  "_originalSource": "px-theme",
+  "_direct": true
+}

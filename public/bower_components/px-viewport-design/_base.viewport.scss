@@ -1,0 +1,60 @@
+////
+/// PX-VIEWPORT-DESIGN
+/// Defines viewport parameters.
+/// @group px-viewport-design
+////
+
+
+/// Set this to the desired width of the "page" element, div.viewport. Will be inserted as the widest breakpoint for the responsive mixin.
+///
+/// @group px-viewport-design:variables:style
+/// @type Number [default] - Viewport width
+/// @todo n/a
+$desk-wide-width    : 100% !default;
+
+/// Set this to the desired value of widest possible viewport width. Will be inserted as the widest breakpoint for the responsive mixin.
+///
+/// @group px-viewport-design:variables:style
+/// @type Number [default] - Widest viewport
+/// @todo n/a
+$desk-wide-max-width: 80rem !default;
+
+/// Set this to the desired value of margin-left and margin-right for viewport.
+///
+/// @group px-viewport-design:variables:style
+/// @type Number [default] - Left and Right margin on viewport
+/// @todo n/a
+$viewport-margin    : auto !default;
+
+/// List of breakpoints used within this module.
+///
+/// @group px-viewport-design:variables:style
+/// @type List | String - Array of different breakpoints
+/// @todo n/a
+$breakpoints: (
+    // backwards compatibility
+    "lap"           "screen and (min-width: 48rem) and (max-width: 63.9rem)", // 720 - 960
+    "portable"      "screen and (max-width: 63.9rem)", // < 960
+    "desk"          "screen and (min-width: 63.9rem)", // > 960
+    "desk-wide"     "screen and (min-width: #{$desk-wide-width})",
+
+    // recommended
+    "palm"             "screen and (max-width: 47.9em)", // < 720
+    "lap-and-up"       "screen and (min-width: 48em)", // > 720
+    "desk-and-up"      "screen and (min-width: 64em)", // > 960
+    "large-and-up"     "screen and (min-width: 120em)", // > 1800
+    "retina"           "(-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi), (min-resolution: 2dppx)"
+);
+
+// .viewport is the primary class applied to div containing app nav and content (body>div.viewport)
+// .viewport width, max-width, and margins are configurable via Sass variables
+.viewport {
+  width: $desk-wide-width;
+  max-width: $desk-wide-max-width;
+  margin-right: $viewport-margin;
+  margin-left: $viewport-margin;
+}
+
+.viewport--full-height {
+  min-height: 100vh;
+}
