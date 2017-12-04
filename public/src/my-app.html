@@ -100,7 +100,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
           /* Update the `createdAt` strings every minute */
           setInterval(() => {
-            console.log('updating;')
+            console.log('Updating created at strings.')
             this.searches = this.searches.map(search => {
               search.createdAt = fromNow(search._createdAt);
               return search;
