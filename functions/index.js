@@ -36,24 +36,31 @@ app.get('/search', (req, res) => {
   });
 });
 
-/* Mount all /events API endpoints */
-exports.events = functions.https.onRequest(app);
+/* POST /events/view */
+app.post('/view', (req, res) => {
+  const name = req.body.name;
+  const path = req.body.path;
+  const _ga = req.body._ga;
+  const _createdAt = admin.database.ServerValue.TIMESTAMP;
 
-exports.addSearch = functions.https.onRequest((req, res) => {
-  cors(req, res, () => {
-    const term = req.body.term;
-    const results = req.body.results || [];
-    const resultsCount = req.body.results.length;
-    const _ga = req.body._ga;
-
-    const searchesRef = admin.database().ref('/searches');
-    searchesRef.push({
-      term,
-      results,
-      resultsCount,
-      _ga
-    }).then(snapshop => {
-      res.status(200).send('OK');
-    });
+  const ref = admin.database().ref('/view');
+  ref.push({
+    name,
+    path,
+    _ga,
+    _createdAt
+  }).then(snapshop => {
+    res.status(200).send('OK');
   });
 });
+
+/* GET /events/view */
+app.get('/view', (req, res) => {
+  const ref = admin.database().ref('/view');
+  ref.on('value', snapshot => {
+    res.json(Object.values(snapshot.val()));
+  });
+});
+
+/* Mount all /events API endpoints */
+exports.events = functions.https.onRequest(app);
