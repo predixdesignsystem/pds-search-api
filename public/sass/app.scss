@@ -21,13 +21,21 @@
 // ...
 
 // Component
-.app-title {
-  color: #09819c;
-  margin-top: 0;
-  font-weight: 400;
+.app {
+  display: flex;
 }
-.app-results {
-  max-width: 900px;
+.app__searches, .app__views {
+  width: 50%;
+  padding: 2rem;
+  height: calc(100vh - 30px);
+  overflow-y: scroll;
+}
+.app__searches {
+  border-right: 1px solid gray;
+}
+.section-title {
+  margin-top: 0;
+  margin-bottom: 1rem;
 }
 
 .search-result {
@@ -50,9 +58,31 @@
   margin-left: auto;
 }
 .search-result__label {
-  margin: 0;
+  margin-top: 0;
+  margin-bottom: .25rem;
 }
 .search-result__value {
+  margin: 0;
+}
+
+.view-result, a.view-result {
+  display: block;
+  padding: 1rem;
+  margin-bottom: .5rem;
+  background-color: $gray1;
+  color: var(--px-base-text-color, #2c404c);
+  cursor: pointer;
+  text-decoration: none;
+}
+a.view-result:hover {
+  color: var(--px-base-text-color, #2c404c);
+  background-color: $gray4;
+}
+.view-result__label {
+  margin-top: 0;
+  margin-bottom: .25rem;
+}
+.view-result__value {
   margin: 0;
 }
 

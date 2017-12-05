@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>PX Branding Bar demo</title>
+    <script type="text/javascript">
+      // Load Web Components when not supported
+      var webComponentsSupported = ('registerElement' in document
+      && 'import' in document.createElement('link')
+      && 'content' in document.createElement('template'));
+
+      if (!webComponentsSupported) {
+        var script = document.createElement('script');
+        script.src = 'bower_components/webcomponentsjs/webcomponents-lite.js';
+        document.head.appendChild(script);
+      }
+
+    </script>
+    <link rel="import" href="../polymer/polymer.html">
+    <link rel="import" href="../px-theme/px-theme-styles.html">
+    <link rel="import" href="px-branding-bar.html">
+
+  </head>
+  <body style="height:1000px;">
+    <style include="px-theme-styles" is="custom-style"></style>
+    <px-branding-bar></px-branding-bar>
+    <p style="margin-top:50px;">Kogi microdosing la croix ramps brunch, intelligentsia photo booth gentrify. Swag four loko poke, actually deep v enamel pin affogato pitchfork schlitz cloud bread before they sold out. Fingerstache migas iPhone church-key yr thundercats listicle sustainable +1. Lumbersexual direct trade selfies portland. Etsy la croix squid kale chips. Asymmetrical irony next level, tote bag fanny pack tumblr kogi live-edge chartreuse snackwave. Green juice pork belly af, tote bag gochujang post-ironic listicle fingerstache fam plaid freegan umami polaroid echo park VHS.
+
+Vegan polaroid mustache, lumbersexual twee meggings four dollar toast slow-carb viral fixie tattooed mixtape schlitz drinking vinegar fam. Man bun iceland art party jean shorts godard, narwhal gentrify health goth hoodie salvia portland air plant chicharrones. Cliche tilde authentic intelligentsia. Health goth poke taiyaki gluten-free williamsburg ennui jianbing, narwhal fingerstache actually messenger bag pug unicorn asymmetrical. Thundercats tousled +1 cray tattooed viral, franzen you probably haven't heard of them. Meh man braid pour-over, photo booth four dollar toast echo park man bun swag tattooed. Viral yr keffiyeh, meditation helvetica kinfolk vaporware pork belly vape af sartorial thundercats.</p>
+  </body>
+</html>

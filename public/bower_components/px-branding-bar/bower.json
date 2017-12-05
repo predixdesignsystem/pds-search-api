@@ -1,0 +1,59 @@
+{
+  "name": "px-branding-bar",
+  "version": "1.1.0",
+  "main": [
+    "px-branding-bar.html"
+  ],
+  "ignore": [
+    ".*",
+    "npm-debug.log",
+    "gulpfile.js",
+    "sass",
+    "bower_components",
+    "node_modules",
+    "test",
+    "OSS_Notice.pdf",
+    "scripts",
+    ".github",
+    "px-branding-bar.png",
+    "LICENSE.md",
+    "CONTRIBUTING.md",
+    "HISTORY.md",
+    "README.md",
+    ".jshintrc",
+    ".editorconfig",
+    "*.enc"
+  ],
+  "dependencies": {
+    "polymer": "#1.9 - 2",
+    "px-theme": "^3.0.0"
+  },
+  "devDependencies": {
+    "px-box-sizing-design": "^1.0.0",
+    "px-flexbox-design": "^1.0.0",
+    "px-headings-design": "^1.0.0",
+    "px-demo": "^2.0.0",
+    "px-icon-set": "^v2.0.0",
+    "px-normalize-design": "^v1.0.0",
+    "px-helpers-design": "^1.0.2",
+    "px-spacing-design": "^1.0.0",
+    "px-demo": "^3.0.0",
+    "web-component-tester": "^6.0.0"
+  },
+  "resolutions": {
+    "webcomponentsjs": "^1.0.0"
+  },
+  "variants": {
+    "1.x": {
+      "dependencies": {
+        "polymer": "^1.9.0"
+      },
+      "devDependencies": {
+        "web-component-tester": "^5.0.0"
+      },
+      "resolutions": {
+        "webcomponentsjs": "^0.7.0"
+      }
+    }
+  }
+}

@@ -11,6 +11,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/polymer/polymer-element.html"/>
 <link rel="import" href="../bower_components/polymer/lib/elements/dom-repeat.html"/>
 <link rel="import" href="../bower_components/polymer/lib/elements/dom-if.html"/>
+<link rel="import" href="../bower_components/px-branding-bar/px-branding-bar.html"/>
 <link rel="import" href="../bower_components/px-theme/px-theme-styles.html"/>
 
 <link rel="import" href="../css/app-styles.html">
@@ -22,33 +23,52 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <style>
       :host {
         display: block;
-        padding: 3rem;
-        transition: background-color 0.2s;
-        background-color: transparent;
-      }
-      :host([updated]) {
-        background-color: #e6f5ff; /* $status-blue1 */
       }
     </style>
 
-    <h1 class="app-title gamma">Realtime searches on predix-ui.com</h1>
+    <px-branding-bar application-title="PDS Site Realtime Stats"></px-branding-bar>
 
-    <div class="app-results">
-      <template is="dom-repeat" items="[[searches]]" as="search">
-        <template is="dom-if" if="[[_createdAtDiffThanLast(search.createdAt, index, searches)]]">
-          <p class="zeta search-result-created-at">[[search.createdAt]]</p>
-        </template>
-        <div class$="search-result [[_getSearchResultsCountClass(search.resultsCount)]]">
-          <div class="search-result__term">
-            <p class="label search-result__label">Term</p>
-            <p class="delta search-result__value">[[search.term]]</p>
-          </div>
-          <div class="search-result__results-count">
-            <p class="label search-result__label"># of Results</p>
-            <p class="delta search-result__value">[[search.resultsCount]]</p>
-          </div>
+    <div class="app">
+      <!-- SEARCHES -->
+      <div class="app__searches">
+        <h2 class="section-title heading--section">Searches</h2>
+
+        <div class="result-list">
+          <template is="dom-repeat" items="[[searches]]" as="search">
+            <template is="dom-if" if="[[_createdAtDiffThanLast(search.createdAt, index, searches)]]">
+              <p class="zeta search-result-created-at">[[search.createdAt]]</p>
+            </template>
+            <div class$="search-result [[_getSearchResultsCountClass(search.resultsCount)]]">
+              <div class="search-result__term">
+                <p class="label search-result__label">Term</p>
+                <p class="delta search-result__value">[[search.term]]</p>
+              </div>
+              <div class="search-result__results-count">
+                <p class="label search-result__label"># of Results</p>
+                <p class="delta search-result__value">[[search.resultsCount]]</p>
+              </div>
+            </div>
+          </template>
         </div>
-      </template>
+      </div>
+
+      <!-- VIEWS -->
+      <div class="app__views">
+        <h2 class="section-title heading--section">Views</h2>
+
+        <div class="result-list">
+          <template is="dom-repeat" items="[[views]]" as="view">
+            <template is="dom-if" if="[[_createdAtDiffThanLast(view.createdAt, index, views)]]">
+              <p class="zeta search-result-created-at">[[view.createdAt]]</p>
+            </template>
+
+            <a class="view-result" href$="https://www.predix-ui.com[[view.path]]" target="_blank">
+              <p class="label view-result__label">[[_getViewPageType(view.path)]]</p>
+              <p class="delta view-result__value">[[view.name]]</p>
+            </a>
+          </template>
+        </div>
+      </div>
     </div>
   </template>
 
@@ -67,10 +87,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               type: Array,
               value: () => []
             },
-            updated: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
+            views: {
+              type: Array,
+              value: () => []
             }
           };
         }
@@ -78,8 +97,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         connectedCallback() {
           super.connectedCallback();
 
-          /* Listen for new search results and add them to the page */
-          const searchRef = firebase.database().ref('/search');
+          /* Listen for new search events and add them to the page */
+          const searchRef = firebase.database().ref('/search').limitToLast(50);
           searchRef.on('child_added', data => {
             let {term, results, resultsCount, _createdAt} = data.val();
             this.searches = [{
@@ -89,13 +108,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               _createdAt,
               createdAt: fromNow(_createdAt)
             }].concat(this.searches);
+          });
 
-            if (!this.updated) {
-              this.updated = true;
-              setTimeout(() => {
-                this.updated = false;
-              }, 1000)
-            }
+          /* Listen for new view events and add them to the page */
+          const viewRef = firebase.database().ref('/view').limitToLast(50);
+          viewRef.on('child_added', data => {
+            let {name, path, _createdAt} = data.val();
+            this.views = [{
+              name,
+              path,
+              _createdAt,
+              createdAt: fromNow(_createdAt)
+            }].concat(this.views);
           });
 
           /* Update the `createdAt` strings every minute */
@@ -104,6 +128,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             this.searches = this.searches.map(search => {
               search.createdAt = fromNow(search._createdAt);
               return search;
+            });
+            this.views = this.views.map(view => {
+              view.createdAt = fromNow(view._createdAt);
+              return view;
             });
           }, 60000);
         }
@@ -115,25 +143,51 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           return 'search-result--none-found';
         }
 
-        _createdAtDiffThanLast(createdAt, currentIndex, searches) {
+        _createdAtDiffThanLast(createdAt, currentIndex, results) {
           if (currentIndex === 0) {
             return true;
           }
-          if (createdAt !== searches[currentIndex-1].createdAt) {
+          if (createdAt !== results[currentIndex-1].createdAt) {
             return true;
           }
           return false;
+        }
+
+        _getViewPageType(path) {
+          const section = path.split('/')[2];
+          if (section) {
+            if (section === 'elements') {
+              return 'Component Docs';
+            }
+            if (section === 'css') {
+              return 'CSS Docs';
+            }
+            if (section === 'develop') {
+              return 'Developer Guides';
+            }
+            if (section === 'design') {
+              return 'Design Guidelines';
+            }
+            if (section === 'about') {
+              return 'Getting Started';
+            }
+            return capitalize(section);
+          }
+          return 'Unknown';
         }
       }
 
       window.customElements.define(MyApp.is, MyApp);
 
       /**
-       * Implements all the behaviors of moment.fromNow(). Pass a
-       * valid JavaScript Date object and the method will return the
-       * time that has passed since that date in a human-readable
-       * format. Passes the moment test suite for `fromNow()`.
-       * See: https://momentjs.com/docs/#/displaying/fromnow/
+       * Capitalizes the first letter of a string and returns it.
+       */
+      function capitalize(str) {
+        return str[0].toUpperCase() + str.slice(1);
+      }
+
+      /**
+       * Formats the time since a date passed as a human-readable string.
        *
        * @example
        *
@@ -177,17 +231,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         if (minutes >= 90 && hours <= 21) {
           return hours + ' hours ago';
         }
-        if (minutes >= 45 && minutes <= 89) {
-          return 'an hour ago';
+        if (seconds >= 90 && minutes <= 89) {
+          return 'in the last hour';
         }
-        if (seconds >= 90 && minutes <= 44) {
-          return minutes + ' minutes ago';
-        }
-        if (seconds >= 45 && seconds <= 89) {
-          return 'a minute ago';
-        }
-        if (seconds >= 0 && seconds <= 45) {
-          return 'a few seconds ago';
+        if (seconds >= 0 && seconds <= 89) {
+          return 'just now';
         }
       }
     })();

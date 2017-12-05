@@ -1,0 +1,25 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../app-layout/app-scroll-effects/app-scroll-effects-behavior.html">
+
+<script>
+
+Polymer.AppLayout.registerEffect('px-app-header-scroll-effect', {
+  setUp: function(config) {
+    // the effect's config is passed to the setUp.
+    this._fxResizeLogo = { logo: Polymer.dom(this).querySelector('.px-branding-bar__content') };
+    this._fxResizeLogo.logo.style.willChange = 'transform, opacity';
+  },
+
+  run: function(progress) {
+     // the progress of the effect
+     this._fxResizeLogo.logo.style.opacity = 1 - progress;
+     this.transform('translate3d(0,'+ - progress * 30 + 'px,0)',  this._fxResizeLogo.logo);
+  },
+
+  tearDown: function() {
+     // clean up and reset of states
+     this._fxResizeLogo.logo.style.willChange = "auto";
+     delete this._fxResizeLogo;
+  }
+});
+</script>
