@@ -1,6 +1,6 @@
 {
   "name": "px-widths-tools-design",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "authors": [
     "General Electric",
     "Harry Roberts"
@@ -37,17 +37,17 @@
   },
   "devDependencies": {
     "px-starter-kit-design": "^1.0.0",
-    "px-sass-doc": "^1.0.0",
-    "px-demo": "^2.2.0"
+    "px-sass-doc": "^2.0.0",
+    "px-demo": "^3.0.0"
   },
   "resolutions": {
     "webcomponentsjs": "^0.7.24"
   },
-  "_release": "1.0.2",
+  "_release": "1.0.3",
   "_resolution": {
     "type": "version",
-    "tag": "v1.0.2",
-    "commit": "70e22be35309bed097330df0f537fc417b62a387"
+    "tag": "v1.0.3",
+    "commit": "bd67c14438956422b4913ef5c1ac1f8713df1881"
   },
   "_source": "https://github.com/predixDev/px-widths-tools-design.git",
   "_target": "^1.0.0",

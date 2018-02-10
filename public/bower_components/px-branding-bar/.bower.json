@@ -1,6 +1,6 @@
 {
   "name": "px-branding-bar",
-  "version": "1.1.0",
+  "version": "1.1.2",
   "main": [
     "px-branding-bar.html"
   ],
@@ -56,14 +56,13 @@
     }
   },
   "homepage": "https://github.com/PredixDev/px-branding-bar",
-  "_release": "1.1.0",
+  "_release": "1.1.2",
   "_resolution": {
     "type": "version",
-    "tag": "v1.1.0",
-    "commit": "a0fb5750f2f1f6d575ca0b88d333eb4f03cc21c9"
+    "tag": "v1.1.2",
+    "commit": "cd781042acce54a51dc92bf7b8fe21ce4aab5add"
   },
   "_source": "https://github.com/PredixDev/px-branding-bar.git",
   "_target": "^1.1.0",
-  "_originalSource": "px-branding-bar",
-  "_direct": true
+  "_originalSource": "px-branding-bar"
 }

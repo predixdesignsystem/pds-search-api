@@ -8,6 +8,19 @@
 <dom-module id="px-typography-design-demo">
   <template>
     <!-- 0: Import the styles-->
+    <style>
+    /**
+     * Font weights
+     */
+
+    .weight--normal {
+      font-weight: 400!important;
+    }
+
+    .weight--bold {
+      font-weight: 600!important;
+    }
+    </style>
 
 <!-- 1: Describe Module -->
 <px-sass-doc
@@ -23,7 +36,7 @@
   selected-options="{{selectedOptions}}">
 
 <!-- 2: Set Options -->
-<px-sass-doc-option
+<px-sass-doc-option slot="options"
   option-name="Font Weight"
   choose-with="dropdown"
   choices='[
@@ -34,17 +47,17 @@
 </px-sass-doc-option>
 
 <!-- 3: Make HTML Demo -->
-<section data-slot="demoHTML">
+<section slot="demo-html">
 <span class$={{typeClasses}}>This is GE Inspira Sans!</span>
 </section>
 
 <!-- 4: Set Import Slot -->
-<section data-slot="import">
+<section slot="import">
 {{importCode}}
 </section>
 
 <!-- 5: Set Usage HTML -->
-<section data-slot="usage">
+<section slot="usage">
 ```
 <!-- Normal -->
 <span class="weight--normal">Normal Text</span>

@@ -1,17 +1,17 @@
 {
-  "name": "px-spacing-responsive-design",
-  "version": "1.0.2",
-  "description": "Responsively controlled spacing helper classes for Predix Experience",
-  "private": false,
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/PredixDev/px-spacing-responsive-design.git"
-  },
-  "author": "General Electric",
-  "devDependencies": {
+    "name": "px-spacing-responsive-design",
+    "version": "1.0.3",
+    "description": "Responsively controlled spacing helper classes for Predix Experience",
+    "private": false,
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/PredixDev/px-spacing-responsive-design.git"
+    },
+    "author": "General Electric",
+    "devDependencies": {
         "browser-sync": "^2.13.0",
         "gulp": "^3.9.1",
         "gulp-autoprefixer": "^3.1.0",

@@ -1,6 +1,6 @@
 {
   "name": "px-theme",
-  "version": "3.1.4",
+  "version": "3.2.2",
   "main": [
     "px-theme.html"
   ],
@@ -43,14 +43,13 @@
     }
   },
   "homepage": "https://github.com/PredixDev/px-theme",
-  "_release": "3.1.4",
+  "_release": "3.2.2",
   "_resolution": {
     "type": "version",
-    "tag": "v3.1.4",
-    "commit": "99f604f2d93c359d71d114403a670e10715a4a4a"
+    "tag": "v3.2.2",
+    "commit": "ba0d13238bd2cd6a4ece967440aafce1d10b2519"
   },
   "_source": "https://github.com/PredixDev/px-theme.git",
   "_target": "^3.1.4",
-  "_originalSource": "px-theme",
-  "_direct": true
+  "_originalSource": "px-theme"
 }

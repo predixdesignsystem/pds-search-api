@@ -34,6 +34,6 @@
     }
   },
   "suites": [
-    "test/px-branding-bar-test-fixture.html"
+    "test/index.html"
   ]
 }

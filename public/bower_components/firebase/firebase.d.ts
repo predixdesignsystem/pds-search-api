@@ -346,9 +346,9 @@ declare namespace firebase.database {
     hasChildren(): boolean;
     key: string | null;
     numChildren(): number;
+    val(): any;
     ref: firebase.database.Reference;
     toJSON(): Object | null;
-    val(): any;
   }
 
   interface Database {
@@ -1611,4 +1611,6 @@ declare namespace firebase.firestore {
   }
 }
 
-export = firebase;
+declare module 'firebase' {
+  export = firebase;
+}

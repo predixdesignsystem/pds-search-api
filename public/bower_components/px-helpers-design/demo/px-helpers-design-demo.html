@@ -25,13 +25,13 @@
   selected-options="{{selectedOptions}}">
 
 <!-- 2: Set Options -->
-<px-sass-doc-option
+<px-sass-doc-option slot="options"
   option-name="Text"
   choose-with="input"
-  option-value="{{inputValue}}">
+  selected-choice="{{inputValue}}">
 </px-sass-doc-option>
 
-<px-sass-doc-option
+<px-sass-doc-option slot="options"
   option-name="Align Text"
   choose-with="dropdown"
   choices='[
@@ -42,7 +42,7 @@
   ]'
   default-choice="None">
 </px-sass-doc-option>
-<px-sass-doc-option
+<px-sass-doc-option slot="options"
   option-name="Floats"
   choose-with="dropdown"
   choices='[
@@ -52,7 +52,7 @@
   ]'
   default-choice="None">
 </px-sass-doc-option>
-<px-sass-doc-option
+<px-sass-doc-option slot="options"
   option-name="Cursor"
   choose-with="dropdown"
   choices='[
@@ -62,7 +62,7 @@
   ]'
   default-choice="None">
 </px-sass-doc-option>
-<px-sass-doc-option
+<px-sass-doc-option slot="options"
   option-name="Hide"
   choose-with="dropdown"
   choices='[
@@ -73,34 +73,34 @@
   ]'
   default-choice="None">
 </px-sass-doc-option>
-<px-sass-doc-option
+<px-sass-doc-option slot="options"
   option-name="Muted Text"
   choose-with="boolean"
   default-choice="false">
 </px-sass-doc-option>
-<px-sass-doc-option
+<px-sass-doc-option slot="options"
   option-name="All Caps"
   choose-with="boolean"
   default-choice="false">
 </px-sass-doc-option>
-<px-sass-doc-option
+<px-sass-doc-option slot="options"
   option-name="Truncate"
   choose-with="boolean"
   default-choice="false">
 </px-sass-doc-option>
-<px-sass-doc-option
+<px-sass-doc-option slot="options"
   option-name="Proceed"
   choose-with="boolean"
   default-choice="false">
 </px-sass-doc-option>
-<px-sass-doc-option
+<px-sass-doc-option slot="options"
   option-name="Full Height"
   choose-with="boolean"
   default-choice="false">
 </px-sass-doc-option>
 
 <!-- 3: Make HTML Demo -->
-<section data-slot="demoHTML">
+<section slot="demo-html">
 
   <div class$="{{cssClasses}}">{{inputValue}}</div>
 
@@ -109,12 +109,12 @@
 <!-- N/A -->
 
 <!-- 4: Set Import Slot -->
-<section data-slot="import">
+<section slot="import">
 @import "px-helpers-design/_generic.helpers.scss";
 </section>
 
 <!-- 4.1: API Intro -->
-<section data-slot="intro">
+<section slot="intro">
 Only use a helper class if an element/component doesn’t already have a class to which you could apply this styling, e.g. if you need to float `.main-nav` left then add `float:left;` to that ruleset as opposed to adding the `.float--left` class to the markup.
 
 Many of these classes carry `!important` as you will always want them to win out over other selectors.
@@ -123,7 +123,7 @@ Many of these classes carry `!important` as you will always want them to win out
 </section>
 
 <!-- 5: Set Usage HTML -->
-<section data-slot="usage">
+<section slot="usage">
   ```
 <!-- Text Align Left -->
 <div class="text--left">...</div>

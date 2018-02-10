@@ -1,6 +1,6 @@
 {
   "name": "px-viewport-design",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "authors": [
     "General Electric"
   ],
@@ -33,17 +33,17 @@
   ],
   "devDependencies": {
     "px-starter-kit-design": "^1.0.0",
-    "px-sass-doc": "^1.0.0",
-    "px-demo": "^2.2.0"
+    "px-sass-doc": "^2.0.0",
+    "px-demo": "^3.0.0"
   },
   "resolutions": {
     "webcomponentsjs": "^0.7.24"
   },
-  "_release": "1.0.2",
+  "_release": "1.0.3",
   "_resolution": {
     "type": "version",
-    "tag": "v1.0.2",
-    "commit": "f47e35b277a6cfaede63fff9d33b39a21fbcc750"
+    "tag": "v1.0.3",
+    "commit": "cb08b98aa6607cf16509ee35fafef0a077a04647"
   },
   "_source": "https://github.com/predixDev/px-viewport-design.git",
   "_target": "^1.0.0",

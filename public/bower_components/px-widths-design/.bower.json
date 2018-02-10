@@ -1,6 +1,6 @@
 {
   "name": "px-widths-design",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "authors": [
     "General Electric",
     "Harry Roberts <harry@csswizardry.com>"
@@ -37,17 +37,17 @@
   },
   "devDependencies": {
     "px-starter-kit-design": "^1.0.0",
-    "px-sass-doc": "^1.0.0",
-    "px-demo": "^2.2.0"
+    "px-sass-doc": "^2.0.0",
+    "px-demo": "^3.0.0"
   },
   "resolutions": {
     "webcomponentsjs": "^0.7.24"
   },
-  "_release": "1.0.2",
+  "_release": "1.0.3",
   "_resolution": {
     "type": "version",
-    "tag": "v1.0.2",
-    "commit": "0c112192bd9cd2ae1765810c84248f6950c4ec1c"
+    "tag": "v1.0.3",
+    "commit": "3a21aa1ddadd897c37131fe5062936282bbe2e4b"
   },
   "_source": "https://github.com/predixDev/px-widths-design.git",
   "_target": "^1.0.0",

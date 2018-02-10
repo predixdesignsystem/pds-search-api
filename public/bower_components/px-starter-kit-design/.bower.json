@@ -1,6 +1,6 @@
 {
   "name": "px-starter-kit-design",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "authors": [
     "General Electric",
     "Harry Roberts <harry@csswizardry.com>"
@@ -43,22 +43,20 @@
     "px-widths-responsive-design": "^1.0.0"
   },
   "devDependencies": {
-    "polymer": "^1.9.0",
     "px-theme": "^3.0.0",
-    "px-sass-doc": "^1.0.0",
-    "px-demo": "^2.2.0"
+    "px-sass-doc": "^2.0.0",
+    "px-demo": "^3.0.0"
   },
   "resolutions": {
     "webcomponentsjs": "^0.7.24"
   },
-  "_release": "1.0.1",
+  "_release": "1.0.2",
   "_resolution": {
     "type": "version",
-    "tag": "v1.0.1",
-    "commit": "f9b3b7683ac294875d53cbb0e4d379f411e2d64b"
+    "tag": "v1.0.2",
+    "commit": "441c969ba4644d2a9e94629fff5872228e46c3ae"
   },
   "_source": "https://github.com/predixDev/px-starter-kit-design.git",
   "_target": "^1.0.1",
-  "_originalSource": "px-starter-kit-design",
-  "_direct": true
+  "_originalSource": "px-starter-kit-design"
 }

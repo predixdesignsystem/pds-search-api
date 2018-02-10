@@ -23,7 +23,7 @@
   selected-options="{{selectedOptions}}">
 
 <!-- 2: Set Options -->
-<px-sass-doc-option
+<px-sass-doc-option slot="options"
   option-name="Divisions"
   choose-with="dropdown"
   choices='[
@@ -37,18 +37,18 @@
 </px-sass-doc-option>
 
 <!-- 3: Make HTML Demo -->
-<section data-slot="demoHTML">
+<section slot="demo-html">
 <div class$="{{layoutItemClasses}}"></div>
 </section>
 
 <!-- 4: Set Import Slot -->
-<section data-slot="import">
+<section slot="import">
 {{importCode}}
 </section>
 
 <!-- 5: Set Usage HTML -->
 
-<section data-slot="usage">
+<section slot="usage">
 ```
 <!-- Whole Division  -->
 <div class="u-1/1"></div>

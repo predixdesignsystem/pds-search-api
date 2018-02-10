@@ -1,6 +1,6 @@
 {
     "name": "px-headings-design",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "description": "Headings gives you base-level heading sizes in the form of easy-to-apply classes.",
     "private": false,
     "scripts": {

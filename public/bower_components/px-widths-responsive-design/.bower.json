@@ -1,6 +1,6 @@
 {
   "name": "px-widths-responsive-design",
-  "version": "1.0.2",
+  "version": "1.0.5",
   "authors": [
     "General Electric",
     "Harry Roberts <harry@csswizardry.com>"
@@ -39,17 +39,17 @@
   },
   "devDependencies": {
     "px-starter-kit-design": "^1.0.0",
-    "px-sass-doc": "^1.0.0",
-    "px-demo": "^2.2.0"
+    "px-sass-doc": "^2.0.0",
+    "px-demo": "^3.0.0"
   },
   "resolutions": {
     "webcomponentsjs": "^0.7.24"
   },
-  "_release": "1.0.2",
+  "_release": "1.0.5",
   "_resolution": {
     "type": "version",
-    "tag": "v1.0.2",
-    "commit": "0dc295a373bb363bbdfa277a4021d90ae6c2c83e"
+    "tag": "v1.0.5",
+    "commit": "79211072d1a6aa0a17daa1f6f55fd1cf5c5c6c30"
   },
   "_source": "https://github.com/predixDev/px-widths-responsive-design.git",
   "_target": "^1.0.0",

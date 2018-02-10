@@ -1,6 +1,6 @@
 {
     "name": "px-defaults-design",
-    "version": "2.0.2",
+    "version": "2.0.3",
     "description": "The defaults module contains variables and settings that are required for using nearly all Predix UI CSS modules.",
     "author": "General Electric",
     "private": false,

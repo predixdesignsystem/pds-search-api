@@ -1,6 +1,6 @@
 {
   "name": "px-spacing-responsive-design",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "authors": [
     "General Electric",
     "Harry Roberts <harry@csswizardry.com>"
@@ -39,17 +39,17 @@
   },
   "devDependencies": {
     "px-starter-kit-design": "^1.0.0",
-    "px-sass-doc": "^1.0.0",
-    "px-demo": "^2.2.0"
+    "px-sass-doc": "^2.0.0",
+    "px-demo": "^3.0.0"
   },
   "resolutions": {
     "webcomponentsjs": "^0.7.24"
   },
-  "_release": "1.0.2",
+  "_release": "1.0.3",
   "_resolution": {
     "type": "version",
-    "tag": "v1.0.2",
-    "commit": "67fab5510d0fa4c7f1b0679fb8f251fff0e5ff76"
+    "tag": "v1.0.3",
+    "commit": "c49511b01c5635bcb43a6170732a596f6246bdc1"
   },
   "_source": "https://github.com/predixDev/px-spacing-responsive-design.git",
   "_target": "^1.0.0",

@@ -24,7 +24,7 @@
   selected-options="{{selectedOptions}}">
 
 <!-- 2: Set Options -->
-<px-sass-doc-option
+<px-sass-doc-option slot="options"
   option-name="Margin Size"
   choose-with="dropdown"
   choices='[
@@ -43,7 +43,7 @@
   default-choice="regular (default)">
 </px-sass-doc-option>
 
-<px-sass-doc-option
+<px-sass-doc-option slot="options"
   option-name="Margin Direction"
   choose-with="dropdown"
   choices='[
@@ -58,7 +58,7 @@
   default-choice="all (default)">
 </px-sass-doc-option>
 
-<px-sass-doc-option
+<px-sass-doc-option slot="options"
   option-name="Padding Size"
   choose-with="dropdown"
   choices='[
@@ -72,7 +72,7 @@
   default-choice="regular (default)">
 </px-sass-doc-option>
 
-<px-sass-doc-option
+<px-sass-doc-option slot="options"
   option-name="Padding Direction"
   choose-with="dropdown"
   choices='[
@@ -87,12 +87,12 @@
   default-choice="all (default)">
 </px-sass-doc-option>
 
-<px-sass-doc-option
+<px-sass-doc-option slot="options"
   option-name="Reverse RTL"
   choose-with="boolean">
 </px-sass-doc-option>
 
-<px-sass-doc-option
+<px-sass-doc-option slot="options"
   option-name="Breakpoint"
   choose-with="dropdown"
   choices='[
@@ -106,19 +106,19 @@
 </px-sass-doc-option>
 
 <!-- 3: Make HTML Demo -->
-<section data-slot="demoHTML" style="border: 1px solid black; opacity: 0.5;width:max-content" dir="{{direction}}">
+<section slot="demo-html" style="border: 1px solid black; opacity: 0.5;width:max-content" dir="{{direction}}">
 <div id="parent" class$="{{divClasses}}">
   <div id="child"></div>
 </div>
 </section>
 
 <!-- 4: Set Import Slot -->
-<section data-slot="import">
+<section slot="import">
 {{importCode}}
 </section>
 
 <!-- 5: Set Usage HTML -->
-<section data-slot="usage">
+<section slot="usage">
 For each "breakpoint" set in px-helpers-design [$breakpoint list](https://github.com/PredixDev/px-helpers-design/blob/master/_generic.helpers.scss#L23-L30), a class will be appended i.e. u-[breakpoint-name]-classname, where the classname follows the following convention. Margin dimensions are set in the Predix UI [spacing-design](https://github.com/PredixDev/px-spacing-design) module.
 ```
 .u-[breakpoint]-[negative][type][direction][size]

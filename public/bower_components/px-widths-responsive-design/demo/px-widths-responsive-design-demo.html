@@ -24,7 +24,7 @@
   selected-options="{{selectedOptions}}">
 
 <!-- 2: Set Options -->
-<px-sass-doc-option
+<px-sass-doc-option slot="options"
   option-name="Width"
   choose-with="dropdown"
   choices='[
@@ -37,7 +37,7 @@
   default-choice="whole">
 </px-sass-doc-option>
 
-<px-sass-doc-option
+<px-sass-doc-option slot="options"
   option-name="Breakpoint"
   choose-with="dropdown"
   choices='[
@@ -51,17 +51,17 @@
 </px-sass-doc-option>
 
 <!-- 3: Make HTML Demo -->
-<section data-slot="demoHTML">
+<section slot="demo-html">
 <div class$="{{divClasses}}">{{widthString}}</div>
 </section>
 
 <!-- 4: Set Import Slot -->
-<section data-slot="import">
+<section slot="import">
 {{importCode}}
 </section>
 
 <!-- 5: Set Usage HTML -->
-<section data-slot="usage">
+<section slot="usage">
 The Predix UI Widths Responsive module is an extension of the default [px-widths-design](https://predix-ui.com/#/px-widths-design) module and provides breakpoint-based classes for widths on elements. This module is a fork of InuitCSS's [widths-responsive](https://github.com/inuitcss/trumps.widths-responsive) module.
 
 The Widths Responsive module loops through the breakpoints defined in px-helper-design's [$breakpoints list](https://github.com/PredixDev/px-helpers-design) to generate prefixed breakpoint-based classes. If you are using the default breakpoints, you will be given classes like `u-1/4-lap-and-up`, or `u-1-of-2-desk`, etc.

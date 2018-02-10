@@ -24,7 +24,7 @@
   selected-options="{{selectedOptions}}">
 
 <!-- 2: Set Options -->
-<px-sass-doc-option
+<px-sass-doc-option slot="options"
   option-name="Options"
   choose-with="dropdown"
   choices='[
@@ -45,16 +45,16 @@
 </px-sass-doc-option>
 
 <!-- 3: Make HTML Demo -->
-<section data-slot="demoHTML">
+<section slot="demo-html">
 <span class$="{{headingClass}}">Text Sample</span>
 </section>
 
 <!-- 4: Set Import Slot -->
-<section data-slot="import">
+<section slot="import">
 @import "px-headings-design/_base.headings.scss";
 </section>
 
-<section data-slot="usage">
+<section slot="usage">
 The headings module exposes classes that set the size and/or type of your heading elements. Apply the class to your element and the styling will automatically happen.
 
 <span class="epsilon">For example, this has an 'epsilon' class applied. You can create it like this:</span>

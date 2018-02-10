@@ -1,6 +1,6 @@
 {
     "name": "px-widths-responsive-design",
-    "version": "1.0.2",
+    "version": "1.0.5",
     "description": "The Predix Experience widths-responsive module is an extension of the default widths module",
     "private": false,
     "scripts": {

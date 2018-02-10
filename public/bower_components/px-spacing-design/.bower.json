@@ -1,6 +1,6 @@
 {
   "name": "px-spacing-design",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "authors": [
     "General Electric",
     "Harry Roberts <harry@csswizardry.com>"
@@ -37,17 +37,17 @@
   },
   "devDependencies": {
     "px-starter-kit-design": "^1.0.0",
-    "px-sass-doc": "^1.0.0",
-    "px-demo": "^2.2.0"
+    "px-sass-doc": "^2.0.0",
+    "px-demo": "^3.0.0"
   },
   "resolutions": {
     "webcomponentsjs": "^0.7.24"
   },
-  "_release": "1.0.2",
+  "_release": "1.0.3",
   "_resolution": {
     "type": "version",
-    "tag": "v1.0.2",
-    "commit": "00e25c1bc5f9b7e460553682e1cdcccf2397e58c"
+    "tag": "v1.0.3",
+    "commit": "9ceb269fdf14fb6c2f88d948f55996f49cedc19b"
   },
   "_source": "https://github.com/predixDev/px-spacing-design.git",
   "_target": "^1.0.0",

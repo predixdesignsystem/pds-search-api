@@ -1,6 +1,6 @@
 {
     "name": "px-functions-design",
-    "version": "2.0.2",
+    "version": "2.0.3",
     "description": "The functions module contains contains functions that are required for using all Predix UI CSS modules. Use it to convert between units (i.e. pixels to REM and back again) and compute numbers.",
     "author": "General Electric",
     "private": false,

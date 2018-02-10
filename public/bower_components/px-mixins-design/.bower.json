@@ -1,6 +1,6 @@
 {
   "name": "px-mixins-design",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "authors": [
     "General Electric"
   ],
@@ -36,17 +36,17 @@
   },
   "devDependencies": {
     "px-starter-kit-design": "^1.0.0",
-    "px-sass-doc": "^1.0.0",
-    "px-demo": "^2.2.0"
+    "px-sass-doc": "^2.0.0",
+    "px-demo": "^3.0.0"
   },
   "resolutions": {
     "webcomponentsjs": "^0.7.24"
   },
-  "_release": "1.0.1",
+  "_release": "1.0.2",
   "_resolution": {
     "type": "version",
-    "tag": "v1.0.1",
-    "commit": "354f28ddc59de554e43643cdff07623d3e31d4cd"
+    "tag": "v1.0.2",
+    "commit": "5be2b33133a7b7d38c5e220f88a2bc40c9be09d3"
   },
   "_source": "https://github.com/predixDev/px-mixins-design.git",
   "_target": "^1.0.0",
