@@ -73,9 +73,8 @@ exports.events = functions.https.onRequest(app);
 /************** STATS **************/
 
 /* Helper functions: time */
-const hoursToMilli = n => n * 3600000;
+
 const hoursAgoMilli = n => Date.now() - hoursToMilli(n);
-const daysToMilli = n => n & hoursToMilli(24);
 const daysAgoMilli = n => Date.now() - daysToMilli(n);
 
 /* Helper functions: query last n entries */
@@ -92,17 +91,7 @@ const getEntriesWithinLastNHours = (refPath, hours) =>
 const getEntriesWithinLastNDays = (refPath, days) =>
   getEntriesWithinLastNMilli(refPath, daysAgoMilli(days));
 
-/* Helper function: reduce entries to a count */
-const reduceByVal = (arr, key) => {
-  let results = arr.map(v => v[key]).reduce((acc, val) => {
-    if (!acc[val]) acc[val] = {"key":val, "count":0};
-    acc[val].count++;
-    return acc;
-  }, {});
-  results = Object.values(results);
-  results.sort((a, b) => b.count - a.count);
-  return results;
-};
+
 
 /*
  * GET /statsViews/?time=3d
@@ -160,6 +149,45 @@ exports.statsSearches = functions.https.onRequest((req, res) => {
       totalCount: searches.length,
       uniqueCount: uniques.length,
       top: uniques
+    });
+  });
+});
+
+/* Time helpers */
+const hoursToMilli = n => n * 3600000;
+const daysToMilli = n => n * hoursToMilli(24);
+
+/* Does what Object.values does for environments that don't have it */
+const toValues = o => {
+  let vals = [];
+  const keys = Object.keys(o);
+  for (let i=0; i<keys.length; i++) {
+    vals.push(o[keys[i]]);
+  }
+  return vals;
+};
+
+/* Helper function: reduce entries to a count */
+const reduceByVal = (arr, key) => {
+  let results = arr.map(v => v[key]).reduce((acc, val) => {
+    if (!acc[val]) acc[val] = {"key":val, "count":0};
+    acc[val].count++;
+    return acc;
+  }, {});
+  results = toValues(results);
+  results.sort((a, b) => b.count - a.count);
+  return results;
+};
+
+exports.mostViewed10 = functions.https.onRequest((req, res) => {
+  const ref = admin.database().ref('/view');
+  const milli10DaysAgo = Date.now() - daysToMilli(10);
+  ref.orderByChild('_createdAt').startAt(milli10DaysAgo).once('value', snapshot => {
+    const views = toValues(snapshot.val());
+    const topViews = reduceByVal(views, 'name');
+    res.json({
+      totalCount: views.length,
+      top: topViews.slice(0,25)
     });
   });
 });
