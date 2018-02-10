@@ -21,8 +21,16 @@
 // ...
 
 // Component
+
+::-webkit-scrollbar {
+  width: 0px;  /* remove scrollbar space */
+  background: transparent;  /* optional: just make scrollbar invisible */
+}
+
 .app {
   display: flex;
+  background-color: $gray18;
+  color: $gray5;
 }
 .app__searches, .app__views {
   width: 50%;
@@ -36,6 +44,7 @@
 .section-title {
   margin-top: 0;
   margin-bottom: 1rem;
+  color: $gray5;
 }
 
 .search-result {
@@ -49,10 +58,12 @@
   margin-bottom: .5rem;
 }
 .search-result--some-found {
-  background-color: $status-green1;
+  background-color: $gray14;
+  color: white;
 }
 .search-result--none-found {
-  background-color: $status-red1;
+  background-color: $red8;
+  color: white;
 }
 .search-result__results-count {
   margin-left: auto;
@@ -60,6 +71,7 @@
 .search-result__label {
   margin-top: 0;
   margin-bottom: .25rem;
+  color: $gray4;
 }
 .search-result__value {
   margin: 0;
@@ -69,18 +81,18 @@
   display: block;
   padding: 1rem;
   margin-bottom: .5rem;
-  background-color: $gray1;
-  color: var(--px-base-text-color, #2c404c);
+  background-color: $gray14;
+  color: white;
   cursor: pointer;
   text-decoration: none;
 }
 a.view-result:hover {
-  color: var(--px-base-text-color, #2c404c);
-  background-color: $gray4;
+  background-color: $gray16;
 }
 .view-result__label {
   margin-top: 0;
   margin-bottom: .25rem;
+  color: $gray4;
 }
 .view-result__value {
   margin: 0;

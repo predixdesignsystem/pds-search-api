@@ -1,0 +1,39 @@
+{
+  "name": "px-dark-theme",
+  "version": "2.2.3",
+  "main": [
+    "px-dark-theme.html"
+  ],
+  "ignore": [
+    "*.enc",
+    "**/.*",
+    "npm-debug.log",
+    "Gruntfile.js",
+    "*.md",
+    "sass",
+    "bower_components",
+    "node_modules",
+    "test",
+    "OSS_Notice.pdf"
+  ],
+  "dependencies": {
+    "polymer": "#1.9 - 2",
+    "px-typography-design": "^2.0.0"
+  },
+  "devDependencies": {
+    "px-colors-design": "^1.0.0"
+  },
+  "resolutions": {
+    "webcomponentsjs": "^1.0.0"
+  },
+  "variants": {
+    "1.x": {
+      "dependencies": {
+        "polymer": "^1.9.0"
+      },
+      "resolutions": {
+        "webcomponentsjs": "^0.7.0"
+      }
+    }
+  }
+}
