@@ -1,0 +1,29 @@
+{
+  "name": "polymer-decorators",
+  "homepage": "https://github.com/Polymer/polymer-decorators",
+  "version": "1.0.2",
+  "authors": [
+    "The Polymer Project Authors"
+  ],
+  "description": "TypeScript decorators for Polymer 2.0",
+  "main": "",
+  "license": "BSD-3-Clause",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests",
+    "polymer-decorators*.tgz"
+  ],
+  "_release": "1.0.2",
+  "_resolution": {
+    "type": "version",
+    "tag": "v1.0.2",
+    "commit": "b1d8c9f4d865d870cacc172e2760f563b924dc62"
+  },
+  "_source": "https://github.com/Polymer/polymer-decorators.git",
+  "_target": "^1.0.2",
+  "_originalSource": "Polymer/polymer-decorators",
+  "_direct": true
+}

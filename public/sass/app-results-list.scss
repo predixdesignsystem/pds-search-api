@@ -1,0 +1,74 @@
+// Settings
+@import "px-colors-design/_settings.colors.scss";
+
+// Tools
+// ...
+
+// Generic
+@import "px-normalize-design/_generic.normalize-mini.scss";
+@import "px-box-sizing-design/_generic.box-sizing.scss";
+@import "px-helpers-design/_generic.helpers.scss";
+
+// Base
+@import "px-headings-design/_base.headings.scss";
+
+// Meta
+// ...
+
+// Objects
+// ...
+
+// Component
+::-webkit-scrollbar {
+  width: 0px;  /* remove scrollbar space */
+  background: transparent;  /* optional: just make scrollbar invisible */
+}
+
+.results {
+  display: flex;
+  flex-direction: column;
+}
+
+.result-title {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: $gray5;
+}
+
+.result-item {
+  display: flex;
+  padding: .5rem 1rem;
+  margin-bottom: .5rem;
+  background-color: $gray14;
+}
+.result-item--important {
+  background-color: $red8;
+}
+
+.result-item-main {
+  margin-right: auto;
+}
+
+.result-item__label {
+  margin-top: 0;
+  margin-bottom: .25rem;
+  color: var(--px-base-text-color);
+}
+
+.result-item__value {
+  margin: 0;
+  font-size: 1.75rem;
+}
+
+.result-item-detail {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  align-self: flex-end;
+  text-align: right;
+}
+
+.result-item-detail > p {
+  font-size: 0.8rem;
+  margin: 0;
+}

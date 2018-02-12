@@ -1,0 +1,33 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html"/>
+<link rel="import" href="../../bower_components/polymer/lib/elements/dom-repeat.html"/>
+<link rel="import" href="../../bower_components/polymer-decorators/polymer-decorators.html"/>
+<link rel="import" href="../../css/app-results-list-styles.html"/>
+
+<dom-module id="app-results-list">
+  <template>
+    <style include="app-results-list-styles"></style>
+    <style>
+      :host {
+        display: block;
+        width: 100%;
+        color: var(--px-base-text-color);
+      }
+    </style>
+
+    <h2 class="result-title heading--section">[[title]]</h2>
+
+    <template is="dom-repeat" items="[[results]]" as="result">
+      <section class$="result-item result-item--[[result.type]]">
+        <div class="result-item-main">
+          <p class="label result-item__label">[[result.label]]</p>
+          <p class="result-item__value">[[result.value]]</p>
+        </div>
+        <div class="result-item-detail">
+          <p>[[result.detail]]</p>
+          <p>[[_formatTime(now, result.created)]]</p>
+        </div>
+      </section>
+    </template>
+  </template>
+  <script src="./app-results-list.js"></script>
+</dom-module>

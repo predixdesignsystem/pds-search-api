@@ -1,0 +1,20 @@
+{
+  "compileOnSave": true,
+  "compilerOptions": {
+    "target": "es2016",
+    "sourceMap": true,
+    "noImplicitAny": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "removeComments": false,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
+  },
+  "include": [
+    "src/**/*.ts",
+    "bower_components/polymer/types/polymer.d.ts",
+    "bower_components/polymer/types/polymer-element.d.ts",
+    "bower_components/polymer-decorators/polymer-decorators.d.ts"
+  ]
+}

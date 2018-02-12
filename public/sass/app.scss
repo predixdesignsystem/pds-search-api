@@ -23,15 +23,43 @@
 // Component
 
 ::-webkit-scrollbar {
-  width: 0px;  /* remove scrollbar space */
+  width: 3px;
+  // width: 0px;  /* remove scrollbar space */
   background: transparent;  /* optional: just make scrollbar invisible */
+}
+::-webkit-scrollbar-thumb {
+  background: $gray15;
+  border-radius: 2px;
 }
 
 .app {
-  display: flex;
+  display: grid;
+  height: calc(100vh - 30px);
+  grid-template-columns: 2fr 2fr 3fr;
+  grid-template-rows: 1fr 1fr;
+  grid-template-areas: "rtsearches rtviews stats"
+                       "rtsearches rtviews top";
   background-color: $gray18;
-  color: $gray5;
+  color: $gray2;
 }
+
+.app-searches {
+  grid-area: rtsearches;  
+}
+
+.app-views {
+  grid-area: rtviews;  
+}
+
+.app-searches, .app-views {
+  overflow-y: scroll;
+  padding: 1rem 1rem 0 1rem;
+  border-right: 1px solid $gray16;
+  border-bottom: 1px solid $gray16;
+}
+
+
+
 .app__searches, .app__views {
   width: 50%;
   padding: 2rem;

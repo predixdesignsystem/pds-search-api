@@ -40,4 +40,8 @@ gulp.task('sass:build', function() {
 
 gulp.task('sass', ['sass:clean', 'sass:build']);
 
+gulp.task('watch', function() {
+  gulp.watch('sass/*', ['sass']);
+});
+
 gulp.task('default', ['sass']);
