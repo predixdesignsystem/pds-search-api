@@ -4,7 +4,6 @@
     "target": "es2016",
     "sourceMap": true,
     "noImplicitAny": true,
-    "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "removeComments": false,
@@ -13,8 +12,10 @@
   },
   "include": [
     "src/**/*.ts",
+    "src/shared.d.ts",
     "bower_components/polymer/types/polymer.d.ts",
     "bower_components/polymer/types/polymer-element.d.ts",
-    "bower_components/polymer-decorators/polymer-decorators.d.ts"
+    "bower_components/polymer-decorators/polymer-decorators.d.ts",
+    "bower_components/firebase/firebase.d.ts"
   ]
 }

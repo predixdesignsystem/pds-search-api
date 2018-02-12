@@ -9,7 +9,7 @@
     "tests"
   ],
   "dependencies": {
-    "firebase": "^4.6.1",
+    "firebase": "^4.9.0",
     "polymer": "^2.2.0",
     "webcomponentsjs": "^1.0.20",
     "px-theme": "^3.1.4",

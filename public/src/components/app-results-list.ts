@@ -1,20 +1,8 @@
-/// <reference path="../../bower_components/polymer/types/polymer-element.d.ts" />
-/// <reference path="../../bower_components/polymer-decorators/polymer-decorators.d.ts" />
-
 {
   const {customElement, property} = Polymer.decorators;
-
-  interface Result {
-    label: string;
-    value: string;
-    detail?: string;
-    type?: string;
-    /** Created time in seconds since epoch */
-    created: number;
-  }
   
   @customElement('app-results-list')
-  class MyApp extends Polymer.Element {
+  class AppResultsList extends Polymer.Element {
     @property({ type: String })
     title: string;
   

@@ -1,0 +1,33 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html"/>
+<link rel="import" href="../bower_components/polymer/lib/elements/dom-repeat.html"/>
+<link rel="import" href="../bower_components/polymer/lib/elements/dom-if.html"/>
+<link rel="import" href="../bower_components/px-branding-bar/px-branding-bar.html"/>
+<link rel="import" href="../bower_components/px-dark-theme/px-dark-theme-styles.html"/>
+<link rel="import" href="components/app-results-list.html"/>
+<link rel="import" href="../css/app-styles.html"/>
+
+<dom-module id="app-shell">
+  <template>
+    <style include="px-dark-theme-styles"></style>
+    <style include="app-styles"></style>
+    <style>
+      :host {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+
+    <px-branding-bar application-title="PDS Site Realtime Stats"></px-branding-bar>
+
+    <div class="app">
+      <div class="app-searches">
+        <app-results-list title="Searches" results="[[searches]]"></app-result-list>
+      </div>
+      <div class="app-views">
+        <app-results-list title="Views" results="[[views]]"></app-result-list>
+      </div>
+    </div>
+  </template>
+  <script src="./app-shell.js"></script>
+</dom-module>

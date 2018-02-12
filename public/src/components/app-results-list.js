@@ -1,5 +1,3 @@
-/// <reference path="../../bower_components/polymer/types/polymer-element.d.ts" />
-/// <reference path="../../bower_components/polymer-decorators/polymer-decorators.d.ts" />
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -11,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 {
     const { customElement, property } = Polymer.decorators;
-    let MyApp = class MyApp extends Polymer.Element {
+    let AppResultsList = class AppResultsList extends Polymer.Element {
         connectedCallback() {
             super.connectedCallback();
             this.now = Date.now();
@@ -27,18 +25,18 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     __decorate([
         property({ type: String }),
         __metadata("design:type", String)
-    ], MyApp.prototype, "title", void 0);
+    ], AppResultsList.prototype, "title", void 0);
     __decorate([
         property({ type: Array }),
         __metadata("design:type", Array)
-    ], MyApp.prototype, "results", void 0);
+    ], AppResultsList.prototype, "results", void 0);
     __decorate([
         property({ type: Number }),
         __metadata("design:type", Number)
-    ], MyApp.prototype, "now", void 0);
-    MyApp = __decorate([
+    ], AppResultsList.prototype, "now", void 0);
+    AppResultsList = __decorate([
         customElement('app-results-list')
-    ], MyApp);
+    ], AppResultsList);
     /**
      * Formats the time since a date passed as a human-readable string.
      *
