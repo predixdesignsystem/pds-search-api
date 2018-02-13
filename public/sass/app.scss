@@ -35,10 +35,11 @@
 .app {
   display: grid;
   height: calc(100vh - 30px);
-  grid-template-columns: 2fr 2fr 3fr;
-  grid-template-rows: 1fr 1fr;
-  grid-template-areas: "rtsearches rtviews stats"
-                       "rtsearches rtviews top";
+  grid-template-columns: 2fr 2fr 1.5fr 1.5fr;
+  grid-template-rows: 1fr 3fr 3fr;
+  grid-template-areas: "rtsearches rtviews views10d views24h"
+                       "rtsearches rtviews toppages toppages"
+                       "rtsearches rtviews topsections topsections";
   background-color: $gray18;
   color: $gray2;
 }
@@ -46,84 +47,210 @@
 .app-searches {
   grid-area: rtsearches;  
 }
-
 .app-views {
   grid-area: rtviews;  
 }
-
 .app-searches, .app-views {
   overflow-y: scroll;
-  padding: 1rem 1rem 0 1rem;
+  padding: 2rem 2rem 0 2rem;
   border-right: 1px solid $gray16;
   border-bottom: 1px solid $gray16;
 }
 
-
-
-.app__searches, .app__views {
-  width: 50%;
+.app-views10d, .app-views24h {
   padding: 2rem;
-  height: calc(100vh - 30px);
-  overflow-y: scroll;
+  border-bottom: 1px solid $gray16;
 }
-.app__searches {
-  border-right: 1px solid gray;
+.app-views10d {
+  grid-area: views10d;
 }
-.section-title {
+.app-views24h {
+  grid-area: views24h;
+}
+
+.app-toppages, .app-topsections {
+  display: flex;
+  flex-direction: column;
+  padding: 2rem;
+  border-bottom: 1px solid $gray16;
+  .chart {
+    flex: 1 1 auto;
+    display: block;
+  }
+}
+.app-toppages {
+  grid-area: toppages;
+}
+.app-topsections {
+  grid-area: topsections;
+}
+
+.app-section-title {
+  @extend .heading--section;
   margin-top: 0;
   margin-bottom: 1rem;
   color: $gray5;
+  font-weight: 400;
 }
-
-.search-result {
-  display: flex;
-  padding: 1rem;
-  margin-bottom: .5rem;
-}
-.search-result-created-at {
-  text-transform: uppercase;
-  margin-top: 2rem;
-  margin-bottom: .5rem;
-}
-.search-result--some-found {
-  background-color: $gray14;
-  color: white;
-}
-.search-result--none-found {
-  background-color: $red8;
-  color: white;
-}
-.search-result__results-count {
-  margin-left: auto;
-}
-.search-result__label {
-  margin-top: 0;
-  margin-bottom: .25rem;
-  color: $gray4;
-}
-.search-result__value {
+.app-section-kpi {
+  @extend .alpha;
   margin: 0;
 }
 
-.view-result, a.view-result {
-  display: block;
-  padding: 1rem;
-  margin-bottom: .5rem;
-  background-color: $gray14;
-  color: white;
-  cursor: pointer;
-  text-decoration: none;
-}
-a.view-result:hover {
-  background-color: $gray16;
-}
-.view-result__label {
-  margin-top: 0;
-  margin-bottom: .25rem;
-  color: $gray4;
-}
-.view-result__value {
-  margin: 0;
+px-simple-horizontal-bar-chart {
+  --px-simple-horizontal-bar-chart-background-color: transparent;
+  --px-simple-horizontal-bar-chart-label-text-color: white;
+  --px-simple-horizontal-bar-chart-legend-text-color: white;
+  --px-vis-series-color-0    :  $cyan6;
+  --px-vis-series-color-1    :  $orange6;
+  --px-vis-series-color-2    :  $yellow-green6;
+  --px-vis-series-color-3    :  $violet6;
+  --px-vis-series-color-4    :  $salmon6;
+  --px-vis-series-color-5    :  $blue6;
+  --px-vis-series-color-6    :  $purple6;
+  --px-vis-series-color-7    :  $teal6;
+  --px-vis-series-color-8    :  $pink6;
+  --px-vis-series-color-9    :  $green6;
+  --px-vis-series-color-10   :  $red6;
+  --px-vis-series-color-11   :  $aqua6;
+  --px-vis-series-color-12   :  $yellow6;
+  --px-vis-series-color-13   :  $neutral-gray6;
+  --px-vis-series-color-14   :  $brown6;
+  --px-vis-series-color-15   :  $cyan4;
+  --px-vis-series-color-16   :  $orange4;
+  --px-vis-series-color-17   :  $yellow-green4;
+  --px-vis-series-color-18   :  $violet4;
+  --px-vis-series-color-19   :  $salmon4;
+  --px-vis-series-color-20   :  $blue4;
+  --px-vis-series-color-21   :  $purple4;
+  --px-vis-series-color-22   :  $teal4;
+  --px-vis-series-color-23   :  $pink4;
+  --px-vis-series-color-24   :  $green4;
+  --px-vis-series-color-25   :  $red4;
+  --px-vis-series-color-26   :  $aqua4;
+  --px-vis-series-color-27   :  $yellow4;
+  --px-vis-series-color-28   :  $neutral-gray4;
+  --px-vis-series-color-29   :  $brown4;
+  --px-vis-series-color-30   :  $cyan2;
+  --px-vis-series-color-31   :  $orange2;
+  --px-vis-series-color-32   :  $yellow-green2;
+  --px-vis-series-color-33   :  $violet2;
+  --px-vis-series-color-34   :  $salmon2;
+  --px-vis-series-color-35   :  $blue2;
+  --px-vis-series-color-36   :  $purple2;
+  --px-vis-series-color-37   :  $teal2;
+  --px-vis-series-color-38   :  $pink2;
+  --px-vis-series-color-39   :  $green2;
+  --px-vis-series-color-40   :  $red2;
+  --px-vis-series-color-41   :  $aqua2;
+  --px-vis-series-color-42   :  $yellow2;
+  --px-vis-series-color-43   :  $neutral-gray2;
+  --px-vis-series-color-44   :  $brown2;
+  --px-vis-series-color-45   :  $cyan8;
+  --px-vis-series-color-46   :  $orange8;
+  --px-vis-series-color-47   :  $yellow-green8;
+  --px-vis-series-color-48   :  $violet8;
+  --px-vis-series-color-49   :  $salmon8;
+  --px-vis-series-color-50   :  $blue8;
+  --px-vis-series-color-51   :  $purple8;
+  --px-vis-series-color-52   :  $teal8;
+  --px-vis-series-color-53   :  $pink8;
+  --px-vis-series-color-54   :  $green8;
+  --px-vis-series-color-55   :  $red8;
+  --px-vis-series-color-56   :  $aqua8;
+  --px-vis-series-color-57   :  $yellow8;
+  --px-vis-series-color-58   :  $neutral-gray8;
+  --px-vis-series-color-59   :  $brown8;
+  --px-vis-series-color-60   :  $cyan5;
+  --px-vis-series-color-61   :  $orange5;
+  --px-vis-series-color-62   :  $yellow-green5;
+  --px-vis-series-color-63   :  $violet5;
+  --px-vis-series-color-64   :  $salmon5;
+  --px-vis-series-color-65   :  $blue5;
+  --px-vis-series-color-66   :  $purple5;
+  --px-vis-series-color-67   :  $teal5;
+  --px-vis-series-color-68   :  $pink5;
+  --px-vis-series-color-69   :  $green5;
+  --px-vis-series-color-70   :  $red5;
+  --px-vis-series-color-71   :  $aqua5;
+  --px-vis-series-color-72   :  $yellow5;
+  --px-vis-series-color-73   :  $neutral-gray5;
+  --px-vis-series-color-74   :  $brown5;
+  --px-vis-series-color-75   :  $cyan3;
+  --px-vis-series-color-76   :  $orange3;
+  --px-vis-series-color-77   :  $yellow-green3;
+  --px-vis-series-color-78   :  $violet3;
+  --px-vis-series-color-79   :  $salmon3;
+  --px-vis-series-color-80   :  $blue3;
+  --px-vis-series-color-81   :  $purple3;
+  --px-vis-series-color-82   :  $teal3;
+  --px-vis-series-color-83   :  $pink3;
+  --px-vis-series-color-84   :  $green3;
+  --px-vis-series-color-85   :  $red3;
+  --px-vis-series-color-86   :  $aqua3;
+  --px-vis-series-color-87   :  $yellow3;
+  --px-vis-series-color-88   :  $neutral-gray3;
+  --px-vis-series-color-89   :  $brown3;
+  --px-vis-series-color-90   :  $cyan1;
+  --px-vis-series-color-91   :  $orange1;
+  --px-vis-series-color-92   :  $yellow-green1;
+  --px-vis-series-color-93   :  $violet1;
+  --px-vis-series-color-94   :  $salmon1;
+  --px-vis-series-color-95   :  $blue1;
+  --px-vis-series-color-96   :  $purple1;
+  --px-vis-series-color-97   :  $teal1;
+  --px-vis-series-color-98   :  $pink1;
+  --px-vis-series-color-99   :  $green1;
+  --px-vis-series-color-100  :  $red1;
+  --px-vis-series-color-101  :  $aqua1;
+  --px-vis-series-color-102  :  $yellow1;
+  --px-vis-series-color-103  :  $neutral-gray1;
+  --px-vis-series-color-104  :  $brown1;
+  --px-vis-series-color-105  :  $cyan9;
+  --px-vis-series-color-106  :  $orange9;
+  --px-vis-series-color-107  :  $yellow-green9;
+  --px-vis-series-color-108  :  $violet9;
+  --px-vis-series-color-109  :  $salmon9;
+  --px-vis-series-color-110  :  $blue9;
+  --px-vis-series-color-111  :  $purple9;
+  --px-vis-series-color-112  :  $teal9;
+  --px-vis-series-color-113  :  $pink9;
+  --px-vis-series-color-114  :  $green9;
+  --px-vis-series-color-115  :  $red9;
+  --px-vis-series-color-116  :  $aqua9;
+  --px-vis-series-color-117  :  $yellow9;
+  --px-vis-series-color-118  :  $neutral-gray9;
+  --px-vis-series-color-119  :  $brown9;
+  --px-vis-series-color-120  :  $cyan7;
+  --px-vis-series-color-121  :  $orange7;
+  --px-vis-series-color-122  :  $yellow-green7;
+  --px-vis-series-color-123  :  $violet7;
+  --px-vis-series-color-124  :  $salmon7;
+  --px-vis-series-color-125  :  $blue7;
+  --px-vis-series-color-126  :  $purple7;
+  --px-vis-series-color-127  :  $teal7;
+  --px-vis-series-color-128  :  $pink7;
+  --px-vis-series-color-129  :  $green7;
+  --px-vis-series-color-130  :  $red7;
+  --px-vis-series-color-131  :  $aqua7;
+  --px-vis-series-color-132  :  $yellow7;
+  --px-vis-series-color-133  :  $neutral-gray7;
+  --px-vis-series-color-134  :  $brown7;
+  --px-vis-series-color-135  :  $cyan10;
+  --px-vis-series-color-136  :  $orange10;
+  --px-vis-series-color-137  :  $yellow-green10;
+  --px-vis-series-color-138  :  $violet10;
+  --px-vis-series-color-139  :  $salmon10;
+  --px-vis-series-color-140  :  $blue10;
+  --px-vis-series-color-141  :  $purple10;
+  --px-vis-series-color-142  :  $teal10;
+  --px-vis-series-color-143  :  $pink10;
+  --px-vis-series-color-144  :  $green10;
+  --px-vis-series-color-145  :  $red10;
+  --px-vis-series-color-146  :  $aqua10;
+  --px-vis-series-color-147  :  $yellow10;
+  --px-vis-series-color-148  :  $neutral-gray10;
+  --px-vis-series-color-149  :  $brown10;
 }
 
 // Trumps

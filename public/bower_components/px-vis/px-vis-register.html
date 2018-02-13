@@ -1,0 +1,463 @@
+<link rel="import" href="../polymer/polymer.html"/>
+<link rel="import" href="px-vis-behavior-common.html"/>
+<link rel="import" href="px-vis-behavior-register.html"/>
+<link rel="import" href="px-vis-behavior-datetime.html"/>
+<link rel="import" href="px-vis-register-item.html"/>
+<link rel="import" href="px-vis-register-item-pie.html"/>
+<link rel="import" href="px-vis-register-datetime.html"/>
+<link rel="import" href="../px-tooltip/px-tooltip.html"/>
+<link rel="import" href="css/px-vis-register-styles.html">
+
+<!--
+
+### Usage
+
+    <px-vis-register
+        height="50"
+        use-percentage="true"
+        width="[[width]]"
+        type="horizontal"
+        tooltip-data=[[tooltipData]]
+        chart-data=[[chartData]]
+        muted-series="[[mutedSeries]]"
+        complete-series-config="[[completeSeriesConfig]]"
+        x-axis-type="time"
+        muted-series="{{mutedSeries}}">
+    </px-vis-register>
+
+
+### Sending Data to the Register
+tooltipData is in the form:
+
+```
+    {
+        "time": "2015-03-25T20:34:47.085Z",
+        "series":[{
+            "name":"seriesId1",
+            "coord":[xCoord1, yCoord1],  //in pixel space
+            "value":{
+                "x":xVal1,             //in data space
+                "seriesId1":yVal1    //in data space
+            }
+        },{
+            "name":"seriesId2",
+            "coord":[xCoord2, yCoord2],  //in pixel space
+            "value":{
+                "x":xVal2,             //in data space
+                "seriesId2":yVal2    //in data space
+            },
+        }],
+        "mouse":[ mouseX, mouseY ],   //in pixel space
+        "xArr":[xCoord1 , xCoord2],   //in pixel space
+        "yArr":[yCoord1 , yCoord2],   //in pixel space
+    }
+```
+
+ When not hovering on a chart, the tooltipData should still have the series names in order for them to still appear in the register. Ex:
+
+```
+    {
+        "time": null,
+        "series":[{
+            "name":"seriesId1",
+            "value": null
+        },{
+            "name":"seriesName1",
+            "value": null
+        }],
+        "mouse": null,
+        "xArr": null,
+        "yArr": null
+    }
+```
+
+### Reporting Data from the Register
+The component returns an object via mutedSeries which the chart can take and react to:
+
+    {
+        'seriesId1':true,
+        'seriesId2':false,
+    }
+
+### Time, number, and name formatting
+Formatting for the timestamps, the data values, and the series names can be controlled via a series of properties. Please see the properties for configuration details.
+
+### Styling
+The following custom properties are available for styling:
+
+Custom property | Description
+:----------------|:-------------
+  `--px-register-series-marker-width` | The width (thickness) of the series marker
+  `--px-vis-register-series-name` | The color of the data series name
+  `--px-vis-register-data-value` | The color of the data series value
+  `--px-vis-register-box` | The color of the box around the register when a scrollbar is present
+  |
+  |
+  |
+  `--px-tooltip-background-color` | The color of the tooltip
+  `--px-tooltip-text-color` | The color of the tooltip text
+  `--px-tooltip-light-background-color` | The color of the light version tooltip
+  `--px-tooltip-light-text-color` | The color of the light version tooltip text
+  `--px-tooltip-light-border-color`| The color of the light version tooltip border
+
+
+@element px-vis-register
+@blurb Element providing a display and interaction space for series in your chart.
+@homepage index.html
+@demo demo.html
+-->
+
+<dom-module id="px-vis-register">
+  <template>
+    <style include="px-vis-register-styles"></style>
+
+    <div class="flex flex-row fullWidth">  <!--  IE min-height + flex bug workaround-->
+      <div
+        id="registerWrap"
+        class$="[[_getMinSizeClass(preventMinSize)]] inline--flex flex--col"
+        style$="[[_returnHeight(height,margin, type)]]; [[_returnWidth(chartWidth, width, margin, type)]]">
+
+        <template is="dom-if" if="{{_displayTime(xAxisType, forceDateTimeDisplay)}}">
+          <div class$="[[_getSeriesWrapperClass(type, horizontalAlignment, _hasScrollBar)]]">
+            <px-vis-register-datetime
+              class$="[[tooltipStyle]]"
+              first-date-time="[[_firstDateTime]]"
+              second-date-time="[[_secondDateTime]]"
+              separator="[[_separator]]"
+              x-axis-type="[[xAxisType]]"
+              series-key="[[tooltipData.timeSeriesKey]]"
+              complete-series-config="[[completeSeriesConfig]]"
+            ></px-vis-register-datetime>
+          </div>
+        </template>
+
+        <div id="seriesWrap" class$="[[_getSeriesWrapperClassReverse(type)]]">
+          <template is="dom-if" if="[[!_isOfType(xAxisType, 'pie')]]">
+            <template is="dom-repeat" items="[[_series]]" as="_groups">
+              <div class$="[[_getSeriesWrapperClass(type, horizontalAlignment, _hasScrollBar)]]">
+                <template is="dom-repeat" id="itemRepeat" items="[[_groups]]" on-dom-change="_scrollBarsPresent">
+                  <px-vis-register-item
+                    class$="[[tooltipStyle]]"
+                    item="[[item]]"
+                    _tt-style="[[tooltipStyle]]"
+                    dynamic-menu-config="[[dynamicMenuConfig]]"
+                    complete-series-config="[[completeSeriesConfig]]"
+                    type="[[type]]"
+                    x-axis-type="[[xAxisType]]"
+                    y-axis-type="[[yAxisType]]"
+                    disable-click="[[disableClick]]"
+                    muted-series="{{mutedSeries}}"
+                    number-format="[[numberFormat]]"
+                    number-format-culture="[[numberFormatCulture]]"
+                    number-format-is-currency$="[[numberFormatIsCurrency]]"
+                    number-format-currency="[[numberFormatCurrency]]"
+                    number-format-zero="[[numberFormatZero]]"
+                    truncation-length="[[truncationLength]]"
+                    prevent-muting="[[preventMuting]]">
+                  </px-vis-register-item>
+                </template>
+              </div>
+            </template>
+          </template>
+          <!-- For pie charts -->
+          <template is="dom-if" if="[[_isOfType(yAxisType, 'pie')]]">
+            <div class$="[[_getSeriesWrapperClassReverse(type)]]">
+              <div class$="[[_getSeriesWrapperClass(type, horizontalAlignment, _hasScrollBar)]]">
+                <template is="dom-repeat" id="pieItemRepeat" items="[[chartData]]" on-dom-change="_scrollBarsPresentPie">
+                  <px-vis-register-item-pie
+                    item="[[item]]"
+                    item-index="[[index]]"
+                    dynamic-menu-config="[[dynamicMenuConfig]]"
+                    complete-series-config="[[completeSeriesConfig]]"
+                    chart-data="[[chartData]]"
+                    type="[[type]]"
+                    x-axis-type="[[xAxisType]]"
+                    y-axis-type="[[yAxisType]]"
+                    use-percentage="[[usePercentage]]"
+                    number-format="[[numberFormat]]"
+                    number-format-culture="[[numberFormatCulture]]"
+                    number-format-is-currency$="[[numberFormatIsCurrency]]"
+                    number-format-currency="[[numberFormatCurrency]]"
+                    number-format-zero="[[numberFormatZero]]"
+                    truncation-length="[[truncationLength]]">
+                  </px-vis-register-item-pie>
+                </template>
+              </div>
+            </div>
+          </template>
+        </div>
+      </div>
+    </div>
+
+  </template>
+</dom-module>
+
+<script>
+  Polymer({
+
+    is: 'px-vis-register',
+
+    behaviors: [
+      PxVisBehavior.observerCheck,
+      PxVisBehavior.sizing,
+      PxVisBehavior.formatting,
+      PxVisBehaviorTime.datetime,
+      PxVisBehavior.mutedSeries,
+      PxVisBehavior.tooltipData,
+      PxVisBehavior.dataset,
+      PxVisBehavior.axisTypes,
+      PxVisBehavior.completeSeriesConfig,
+      PxVisBehavior.commonMethods,
+      PxVisBehaviorRegister.register,
+      PxVisBehaviorRegister.pie,
+      PxVisBehaviorRegister.datetime,
+      PxVisBehavior.forceDateTimeDisplay,
+      PxVisBehaviorRegister.groupings,
+      PxVisBehavior.dynamicMenuConfig,
+      PxVisBehaviorRegister.disableClick
+    ],
+    /**
+     * Properties block, expose attribute values to the DOM via 'reflect'
+     *
+     * @property properties
+     * @type Object
+     */
+    properties: {
+      /**
+      * Defines if the register should be `horizontal` or `vertical`.
+      */
+      type: {
+       type:String,
+       value:"vertical",
+       notify: true
+      },
+      /**
+       * If the `type` is 'horizontal', this property determines how the register
+       * should align horizontally, using flex align:
+       * - 'left'
+       * - 'center'
+       * - 'right'
+       * - 'justify'
+       * - 'spaced'
+       * If the register starts overflowing, this will be ignored so that all register
+       * items are accessible via scrolling.
+       */
+      horizontalAlignment: {
+        type: String,
+        value: 'left'
+      },
+      _hasScrollBar: {
+        type: Boolean,
+        value: false
+      },
+      /**
+       * List of the series to add to the register.
+       *
+      */
+      _series: {
+        type: Array,
+        notify: true
+      },
+      /**
+       * Prevents the register from having a minimum size.
+       */
+      preventMinSize: {
+        type: Boolean,
+        value: false
+      },
+      /**
+       * Prevents the mute on-click behavior.
+       */
+      preventMuting: {
+        type: Boolean,
+        value: false
+      },
+      chartWidth: {
+        type: Number,
+        value: ''
+      },
+
+      width: {
+        type: Number,
+        value: ''
+      },
+
+      _itemCount: {
+        type: Number,
+        value: 0
+      },
+      /**
+       * If inert, the register won't process any new data coming in. Useful when the register is hidden.
+       */
+      inertRegister: {
+        type: Boolean,
+        value: false
+      }
+    },
+
+    observers: [
+      '_formatDateTime(tooltipData.*)',
+      '_scrollBarsPresent(height, margin)',
+      '_scrollBarsPresent(chartWidth, margin)',
+      '_scrollBarsPresentPie(height, margin)',
+      '_scrollBarsPresentPie(chartWidth, type, margin)',
+      '_computeSeries(tooltipData.series.*, groupings)'
+     ],
+
+    /**
+     * Function which takes the incoming datetime from tooltipData and formats it.
+     * Returns set values via setting helper properties used in the html.
+     *
+     * @method _formatDateTime
+     */
+    _formatDateTime: function() {
+     if(this.hasUndefinedArguments(arguments)) {
+       return;
+     }
+
+
+      if(!this.inertRegister) {
+        if(this.tooltipData.time) {
+          var momentObj1 = this.formatTimestamp(
+            this.tooltipData.time,
+            this.timezone,
+            this.firstDateTimeFormat
+          );
+          var momentObj2 = this.formatTimestamp(
+            this.tooltipData.time,
+            this.timezone,
+            this.secondDateTimeFormat
+          );
+          this.set('_firstDateTime', momentObj1);
+          this.set('_secondDateTime', momentObj2);
+          this.set('_separator', this.separator);
+
+        } else {
+          this.set('_firstDateTime', '');
+          this.set('_secondDateTime', '');
+          this.set('_separator', '');
+        }
+      }
+    },
+    /**
+     * Returns the list of series with proper grouping.
+     * Also sets _seriesKeys and _tooltipDataObj.
+     *
+    */
+    _computeSeries: function() {
+     if(this.hasUndefinedArguments(arguments)) {
+       return;
+     }
+
+      this.debounce('computeSeries', function() {
+        if(!this.inertRegister) {
+          var allSeries = this.tooltipData.series,
+              pivot = Math.ceil(allSeries.length / this.groupings),
+              groupedSeries = [],
+              s = 0,
+              e = pivot;
+
+          for(var i = 0; i < this.groupings; i++) {
+            //copy the section of the series
+            groupedSeries.push(allSeries.slice(s,e));
+
+            //calc our next start and end
+            s = e;
+            e = s + pivot;
+          }
+          this.set('_series', groupedSeries);
+        }
+      }, 1);
+    },
+
+    _displayTime: function(xAxisType, forceDateTimeDisplay) {
+      if(this.hasUndefinedArguments(arguments)) {
+        return;
+      }
+
+      return forceDateTimeDisplay || xAxisType === 'time';
+    },
+
+    _getMinSizeClass: function(preventMinSize) {
+      if(this.hasUndefinedArguments(arguments)) {
+        return;
+      }
+
+      if(preventMinSize) {
+        return '';
+      } else {
+        return 'minSize';
+      }
+    },
+
+    _returnHeight: function(height,margin, type) {
+      if(this.hasUndefinedArguments(arguments)) {
+        return;
+      }
+
+      return this.type === 'vertical' ? 'height:' + (height - margin.bottom) + 'px': '';
+    },
+
+    _returnWidth: function(chartWidth, width, margin, type) {
+      if(this.hasUndefinedArguments(arguments)) {
+        return;
+      }
+
+      return this.type === 'horizontal' ? 'max-width:' + chartWidth + 'px;': 'width:' + width + 'px;';
+    },
+
+    _scrollBarsPresent: function() {
+      if(this.height === undefined || this.chartWidth === undefined || this.margin === undefined) {
+        return;
+      }
+
+      window.requestAnimationFrame(this._scrollBarsPresentAF.bind(this));
+    },
+
+    _scrollBarsPresentAF: function() {
+      if(this.$$('#itemRepeat') && this._itemCount !== this.$$('#itemRepeat').renderedItemCount) {
+        var b = false;
+        if(this.type === 'vertical' &&
+            this.$.seriesWrap.scrollHeight > (this.height - this.margin.top - this.margin.bottom)) {
+          b = true;
+        } else if(this.type === 'horizontal' &&
+            this.$.seriesWrap.scrollWidth > this.chartWidth) {
+          b = true;
+        }
+
+        this.toggleClass('scrollOn', b, this.$.seriesWrap);
+
+        this._itemCount = this.$$('#itemRepeat').renderedItemCount;
+      }
+    },
+
+    _scrollBarsPresentPie: function() {
+      if(this.height === undefined || this.chartWidth === undefined || this.margin === undefined) {
+        return;
+      }
+
+      window.requestAnimationFrame(this._scrollBarsPresentPieAF.bind(this));
+    },
+
+    _scrollBarsPresentPieAF: function() {
+      //disable optimization for pie chart as we don't hit this function as
+      //often and this helps making the register dynamically adjust
+      //its scrollbars. we might want to revisit the scrollbar process in general
+      // if(this.$$('#pieItemRepeat') && this._itemCount !== this.$$('#pieItemRepeat').renderedItemCount) {
+        var b = false;
+        if(this.type === 'vertical' &&
+            this.$.seriesWrap.scrollHeight > (this.height - this.margin.top - this.margin.bottom)) {
+          b = true;
+        } else if(this.type === 'horizontal' &&
+            this.$.seriesWrap.scrollWidth > this.chartWidth) {
+          b = true;
+        }
+
+        this.toggleClass('scrollOn', b, this.$.seriesWrap);
+        this.set('_hasScrollBar', b);
+
+        //this._itemCount = this.$$('#pieItemRepeat').renderedItemCount;
+      // }
+    }
+  });
+  </script>

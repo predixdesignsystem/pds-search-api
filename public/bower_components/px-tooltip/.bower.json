@@ -1,0 +1,66 @@
+{
+  "name": "px-tooltip",
+  "version": "1.2.4",
+  "main": [
+    "px-tooltip.html"
+  ],
+  "ignore": [
+    "*.enc",
+    ".*",
+    "node_modules",
+    "bower_components",
+    "sass",
+    "HISTORY.md",
+    "CONTRIBUTING.md",
+    "OSS_Notice.pdf",
+    "scripts",
+    ".github",
+    ".editorconfig",
+    ".jshintrc",
+    ".gitignore",
+    "LICENSE.md",
+    "gulpfile.js",
+    "monogram-wdmk.png",
+    "README.md",
+    "wct.conf.json",
+    "px-tooltip.png"
+  ],
+  "dependencies": {
+    "iron-resizable-behavior": "^2.0.0",
+    "polymer": "#1.9 - 2"
+  },
+  "devDependencies": {
+    "px-normalize-design": "^1.0.0",
+    "px-box-sizing-design": "^1.0.0",
+    "px-helpers-design": "^1.0.0",
+    "px-demo": "^3.0.0",
+    "px-theme": "^3.0.0",
+    "web-component-tester": "^6.0.0"
+  },
+  "resolutions": {
+    "webcomponentsjs": "^1.0.0"
+  },
+  "variants": {
+    "1.x": {
+      "dependencies": {
+        "polymer": "^1.9.0"
+      },
+      "devDependencies": {
+        "web-component-tester": "^5.0.0"
+      },
+      "resolutions": {
+        "webcomponentsjs": "^0.7.0"
+      }
+    }
+  },
+  "homepage": "https://github.com/PredixDev/px-tooltip",
+  "_release": "1.2.4",
+  "_resolution": {
+    "type": "version",
+    "tag": "v1.2.4",
+    "commit": "352ec3c0ae45ff1edd98a787a4b1a7d4d07ec77e"
+  },
+  "_source": "https://github.com/PredixDev/px-tooltip.git",
+  "_target": "^1.2.0",
+  "_originalSource": "px-tooltip"
+}

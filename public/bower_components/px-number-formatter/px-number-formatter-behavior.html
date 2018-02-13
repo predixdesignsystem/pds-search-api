@@ -1,0 +1,231 @@
+<!--
+@license
+
+Copyright 2017 Pascal Gula
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+All modifications are Copyright 2017 by GE. Please see LICENSE.md.
+
+-->
+
+
+<link rel="import" href="numbro-import.html">
+
+<script>
+  var PxNumberFormatter = PxNumberFormatter || {};
+
+  /*
+      Name:
+      PxNumberFormatter.commonProperties
+
+      Description:
+      Polymer behavior that provides properties devs might want to pass down.
+
+      @polymerBehavior PxNumberFormatter.commonProperties
+  */
+  PxNumberFormatter.commonProperties = {
+
+    properties: {
+
+      /**
+       * The format used to generate the output
+       */
+      format: {
+        type: String
+      },
+
+      /**
+       * Specify whether the value should be formatted as a currency
+       */
+      currency: {
+        type: Boolean,
+        value: false
+      },
+
+      /**
+       * Provide localization for currency formatting
+       */
+      culture: {
+        type: String,
+        value: 'en-US'
+      },
+
+      /**
+       * Provide a new default format for `0` value
+       */
+      zeroFormat: {
+        type: String
+      }
+    }
+  };
+  /*
+      Name:
+      PxNumberFormatter.formatter
+
+      Description:
+      Polymer behavior that wraps the [numbro.js](http://numbrojs.com/) library. Provides Numbrojs number formatting properties and methods.
+
+      @polymerBehavior PxNumberFormatter.formatter
+  */
+  PxNumberFormatter.formatter = [{
+
+    properties: {
+        /**
+         * The number value to be formatted
+         */
+        value: {
+          type: Number
+        },
+
+        /**
+         * The formatted string representation of the value. Only set if
+         * `targetElement` is not defined
+         */
+        formattedValue: {
+          type: String,
+          notify: true
+        },
+
+        /**
+         * Reflect if the value is negative
+         */
+        negative: {
+          type: Boolean,
+          readOnly: true,
+          reflectToAttribute: true
+        },
+
+        /**
+         * A formatted String to extract a value from
+         */
+        unformat: {
+          type: String,
+          observer: '_unformat'
+        },
+
+        /**
+         * The unformatted Number representation of the unformat value
+         */
+        unformattedValue: {
+          type: Number,
+          notify: true
+        },
+
+        /**
+         * Provide a new default format
+         */
+        defaultFormat: {
+          type: String,
+          observer: '_defaultFormat'
+        },
+
+        /**
+         * Provide a new default format for currency
+         */
+        defaultCurrencyFormat: {
+          type: String,
+          observer: '_defaultCurrencyFormat'
+        },
+        /**
+        * Target element to assign the formatted value to. If defined
+        * `formattedValue` won't be assigned
+        */
+        targetElement: {
+          type: HTMLElement
+        }
+      },
+
+      observers: [
+        '_format(value, format, currency)',
+        '_culture(culture)',
+        '_zeroFormat(zeroFormat)'
+      ],
+
+      ready: function() {
+        // force a default value for format for the observer to trigger properly
+        this.format = this.format || (this.currency ? '0$' : '0,0');
+      },
+
+      /**
+       * @param {number} input value.
+       */
+      _format: function(value) {
+        if(this.value === undefined || this.format === undefined || this.currency === undefined) {
+          return;
+        }
+
+        var formatted;
+        this._setNegative(value < 0);
+        if(this.currency) {
+          if(this.format) {
+            formatted = numbro(value).formatCurrency(this.format);
+          } else {
+            formatted = numbro(value).formatCurrency();
+          }
+        } else {
+          formatted = numbro(value).format(this.format);
+        }
+
+        formatted = formatted === 'NaN' ? '' : formatted;
+
+        if(this.targetElement) {
+          this.targetElement.textContent = formatted;
+        } else {
+          this.set('formattedValue', formatted);
+        }
+      },
+
+      /**
+       * @param {string} formatted value.
+       */
+      _unformat: function(value) {
+        var unformatted = numbro().unformat(value);
+
+        this.set('unformattedValue', unformatted);
+      },
+
+      /**
+       * @param {string} new culture.
+       */
+      _culture: function(culture) {
+        if(!(this.culture === undefined)) {
+          numbro.culture(culture);
+          this._format(this.value);
+        }
+      },
+
+      /**
+       * @param {string} new default format.
+       */
+      _defaultFormat: function(format) {
+        numbro.defaultFormat(format);
+        this._format(this.value);
+      },
+
+      /**
+       * @param {string} new default currency format.
+       */
+      _defaultCurrencyFormat: function(format) {
+        numbro.defaultCurrencyFormat(format);
+        this._format(this.value);
+      },
+
+      /**
+       * @param {string} new default zero format.
+       */
+      _zeroFormat: function(format) {
+        if(!(this.zeroFormat === undefined)) {
+          numbro.zeroFormat(format);
+          this._format(this.value);
+        }
+      }
+
+  }, PxNumberFormatter.commonProperties];
+
+</script>

@@ -1,0 +1,44 @@
+{
+  "name": "px-moment-imports",
+  "version": "1.1.0",
+  "main": [
+    "px-moment-imports.html"
+  ],
+  "ignore": [
+    ".*",
+    "npm-debug.log",
+    "gulpfile.js",
+    "sass",
+    "bower_components",
+    "node_modules",
+    "test",
+    "OSS_Notice.pdf",
+    "scripts",
+    ".github",
+    "px-moment-imports.png",
+    "LICENSE.md",
+    "CONTRIBUTING.md",
+    "HISTORY.md",
+    "README.md",
+    ".jshintrc",
+    ".editorconfig",
+    "*.enc"
+  ],
+  "dependencies": {
+    "pxmoment-timezone": "moment-timezone#~0.5.3",
+    "polymer": "#1.9 - 2"
+  },
+  "resolutions": {
+    "webcomponentsjs": "^1.0.0"
+  },
+  "variants": {
+    "1.x": {
+      "dependencies": {
+        "polymer": "^1.9.0"
+      },
+      "resolutions": {
+        "webcomponentsjs": "^0.7.24"
+      }
+    }
+  }
+}

@@ -1,0 +1,568 @@
+<link rel="import" href="px-vis-behavior-common.html">
+
+<script>
+var PxVisBehaviorRegister = PxVisBehaviorRegister || {};
+
+/*
+    Name:
+    PxVisBehaviorRegister.groupings
+
+    Description:
+    Polymer behavior that provides the groupings property for px-vis register items.
+
+    Dependencies:
+    - none
+
+    @polymerBehavior PxVisBehaviorRegister.groupings
+*/
+PxVisBehaviorRegister.groupings = {
+  properties: {
+    /**
+     * A holder for a line of the register
+     */
+    groupings: {
+      type: Number,
+      value: 1
+    }
+  }
+};
+
+/*
+    Name:
+    PxVisBehaviorRegister.disableClick
+
+    Description:
+    Polymer behavior that provides the disableClick property for px-vis register items.
+
+    Dependencies:
+    - none
+
+    @polymerBehavior PxVisBehaviorRegister.disableClick
+*/
+PxVisBehaviorRegister.disableClick = {
+  properties: {
+    disableClick: {
+      type: Boolean,
+      value: false
+    }
+  }
+}
+
+/*
+    Name:
+    PxVisBehaviorRegister.itemShared
+
+    Description:
+    Polymer behavior that provides the basic properties and methods for px-vis register items.
+
+    Dependencies:
+    - none
+
+    @polymerBehavior PxVisBehaviorRegister.itemShared
+*/
+PxVisBehaviorRegister.itemShared = [{
+  properties: {
+    /**
+     * A holder for a line of the register
+     */
+    item: {
+      type: Object
+    },
+    /**
+     * Which flex classes get applied to make it side or top
+     */
+    _wrapperClass: {
+      type: String,
+      computed: '_getWrapperClass(item, completeSeriesConfig)'
+    },
+    /**
+     * The name of the item
+     */
+    _configName: {
+      type: String,
+      computed: '_computeConfigName(item, completeSeriesConfig)'
+    },
+    /**
+     * The key holdiong the name of the item in the config
+     */
+    nameKey: {
+      type: String,
+      value: 'name'
+    },
+    /**
+     * the truncated name for the item
+     */
+    _truncatedName: {
+      type: String,
+      computed: '_computeTruncatedName(_configName, completeSeriesConfig, truncationLength)'
+    },
+    /**
+     * Whether truncation ran or not
+     */
+    _didTruncate: {
+      type: Boolean,
+      computed: '_computeDidTruncate(_configName, completeSeriesConfig, truncationLength)'
+    },
+
+    /**
+     * Base classes for register item based on its type (vertical/horizontal)
+     */
+    _baseClasses: {
+      type: String,
+      computed: '_computeBaseClasses(type)'
+    },
+    /**
+     * Defines if the register should be horizontal or vertical. Options are:
+     *  - `vertical`
+     *  - `horizontal`
+     *
+    */
+    type: {
+     type: String,
+     value: "vertical",
+     notify: true
+    },
+    _mouseEnterHandler: {
+      type: Function
+    },
+    _mouseLeaveHandler: {
+      type: Function
+    },
+    _hasDynamicMenu: {
+      type: Boolean,
+      value: false
+    }
+  },
+
+  observers: [
+    '_menuConfigChanged(dynamicMenuConfig)'
+  ],
+  attached: function() {
+
+    this._mouseEnterHandler = function() {
+
+        if(this._hasDynamicMenu) {
+
+          //store a ref to the menu if we don't have it yet
+          if(!this.$.menu) {
+            this.$.menu = this.$$('px-vis-dynamic-menu');
+          }
+
+          this.$.menu.fadeIn();
+        }
+      }.bind(this);
+      this._mouseLeaveHandler = function() {
+        if(this._hasDynamicMenu && this.$.menu) {
+          this.$.menu.fadeOut();
+        }
+      }.bind(this);
+
+      this.addEventListener('mouseenter', this._mouseEnterHandler);
+      this.addEventListener('mouseleave', this._mouseLeaveHandler);
+    },
+    detached: function() {
+      this.removeEventListener('mouseenter', this._mouseEnterHandler);
+      this.removeEventListener('mouseleave', this._mouseLeaveHandler);
+    },
+
+  /**
+   * Returns the correct flex type based on the register type
+   */
+  _getWrapperClass: function() {
+   if(this.hasUndefinedArguments(arguments)) {
+     return;
+   }
+
+    var classList = 'flex ';
+    if(this.type === 'horizontal') {
+      classList += 'flex--col ';
+    } else {
+      classList += 'flex--row flex--justify';
+    }
+    return classList;
+  },
+
+  /**
+   * Returns the name of the item
+   */
+  _computeConfigName: function() {
+   if(this.hasUndefinedArguments(arguments)) {
+     return;
+   }
+
+    return this._getConfigName();
+  },
+  /**
+   * returns the truncated name of the item
+   */
+  _computeTruncatedName: function(_configName) {
+   if(this.hasUndefinedArguments(arguments)) {
+     return;
+   }
+
+    return this._truncateName(_configName.toString(), this.truncationLength);
+  },
+
+  /**
+   * decide if series name was truncated. If so, add a tooltip showing full name
+   *
+   */
+  _computeDidTruncate: function(str,len) {
+   if(this.hasUndefinedArguments(arguments)) {
+     return;
+   }
+
+    var len = this.truncationLength;
+    return len > 2 && str.length > len ? true : false;
+  },
+
+  /**
+   * Tries to draw the SVG to canvas and if that doesnt work, falls back on a failure callback
+   */
+  _getConfigName: function() {
+
+    if(this.xAxisType === 'pie') {
+      return this.item.y;
+    } else {
+      if(this.completeSeriesConfig && this.completeSeriesConfig[this.item.name]) {
+        return this.completeSeriesConfig[this.item.name]['name'];
+      }
+    }
+  },
+
+  /**
+   * helper function to set initial classes
+   */
+  _computeBaseClasses: function() {
+   if(this.hasUndefinedArguments(arguments)) {
+     return;
+   }
+
+    var baseClasses = (this.type === 'horizontal') ? "series narrow flex flex--row" : "series wide flex flex--row flex--justify";
+    return baseClasses;
+  },
+  _getDynamicMenuClass: function(type) {
+    if(this.hasUndefinedArguments(arguments)) {
+      return;
+    }
+    if(type === 'vertical') {
+      return 'flex__item--bottom';
+    } else {
+      return '';
+    }
+  },
+
+  _menuConfigChanged: function() {
+    if(this.hasUndefinedArguments(arguments)) {
+      return;
+    }
+
+    this._hasDynamicMenu = this.dynamicMenuConfig && this.dynamicMenuConfig.length > 0;
+  }
+}, PxVisBehavior.observerCheck, PxVisBehavior.dynamicMenuConfig];
+
+/*
+    Name:
+    PxVisBehaviorRegister.register
+
+    Description:
+    Polymer behavior that provides the basic properties and methods for px-vis register.
+
+    Dependencies:
+    - none
+
+    @polymerBehavior PxVisBehaviorRegister.register
+*/
+PxVisBehaviorRegister.register = [{
+  properties: {},
+  /**
+   * returns the correct classes for the series based on type
+   */
+  _getSeriesWrapperClass: function(type, hozAlign, _hasScrollBar) {
+    if(this.hasUndefinedArguments(arguments)) {
+      return;
+    }
+    var classList = 'flex fullWidth ';
+
+    if(type === 'horizontal') {
+      classList += 'flex--row ';
+
+      if(_hasScrollBar || hozAlign === 'left') {
+         classList += 'flex--left ';
+      } else if(hozAlign === 'center') {
+        classList += 'flex--center ';
+      } else if(hozAlign === 'right') {
+        classList += 'flex--right ';
+      } else if(hozAlign === 'justify') {
+        classList += 'flex--justify ';
+      } else if(hozAlign === 'spaced') {
+        classList += 'flex--spaced ';
+      }
+    } else {
+      classList += 'flex--col';
+    }
+
+    return classList;
+  },
+
+  _getSeriesWrapperClassReverse: function(type) {
+    if(this.hasUndefinedArguments(arguments)) {
+      return;
+    }
+    if(type === 'horizontal') {
+      return this._getSeriesWrapperClass('vertical');
+    }
+    return this._getSeriesWrapperClass('horizontal');
+  },
+
+  /**
+   * tests if an item is of a type
+   */
+  _isOfType: function(toTest, type) {
+    if(toTest === undefined || type === undefined) {
+      return false;
+    }
+
+    if(typeof type === 'string') {
+      return toTest === type;
+    }
+
+    var linear = false;
+    type.forEach(function(t) {
+      if(toTest === t) {
+        linear = true;
+      }
+    });
+
+    return linear;
+  }
+}, PxVisBehavior.observerCheck];
+
+/*
+    Name:
+    PxVisBehaviorRegister.pie
+
+    Description:
+    Polymer behavior that provides the basic properties and methods for px-vis register.
+
+    Dependencies:
+    - none
+
+    @polymerBehavior PxVisBehaviorRegister.pie
+*/
+PxVisBehaviorRegister.pie = {
+  properties: {
+    /**
+     * For pie charts whether the values should be displayed in %
+     */
+    usePercentage: {
+      type: Boolean,
+      value: false
+    }
+  }
+};
+
+/*
+    Name:
+    PxVisBehaviorRegister.datetime
+
+    Description:
+    Polymer behavior that provides the basic properties and methods for px-vis register.
+
+    Dependencies:
+    - none
+
+    @polymerBehavior PxVisBehaviorRegister.datetime
+*/
+PxVisBehaviorRegister.datetime = {
+  properties: {
+
+    /**
+     * Holder for the formated first datetime string
+     *
+     * @property _firstDateTime
+     * @type string
+    */
+    _firstDateTime:{
+      type:String,
+      notify:true
+    },
+    /**
+     * Holder for the formated second datetime string
+     *
+     * @property _secondDateTime
+     * @type string
+    */
+    _secondDateTime:{
+      type:String,
+      notify:true
+    },
+    /**
+     * Holder for the formated separator character
+     *
+     * @property _separator
+     * @type string
+    */
+    _separator:{
+      type:String,
+      notify:true
+    }
+  }
+};
+
+/*
+    Name:
+    PxVisBehaviorRegister.generalItem
+
+    Description:
+    Polymer behavior that provides the muting properties.
+
+    Dependencies:
+    - none
+
+    @polymerBehavior PxVisBehaviorRegister.generalItem
+*/
+PxVisBehaviorRegister.generalItem = [{
+  properties: {
+    /**
+     * Decides if the item should be muted
+     */
+    _itemMutedToStart: {
+      type: String,
+      computed: '_computeItemMutedToStart(item, completeSeriesConfig.*)'
+    },
+    /**
+     * calcates the color of the item
+     */
+    _itemColor: {
+      type: String,
+      computed: '_computeItemColor(item, completeSeriesConfig.*)'
+    },
+    /**
+     * calculates the dash pattern of the item
+     */
+    _dashPattern: {
+      type: String,
+      computed: '_computeItemDashPattern(item, completeSeriesConfig.*)'
+    },
+    /**
+      * Prevents the mute on click behavior
+      */
+    preventMuting: {
+      type: Boolean,
+      value: false
+    }
+  },
+
+  /**
+   * returns if the series should be muted to start
+   */
+  _computeItemMutedToStart: function() {
+   if(this.hasUndefinedArguments(arguments)) {
+     return;
+   }
+
+    return this._mutedToStart(this.item.name);
+  },
+
+  /**
+   * Function which takes an index and returns the appropriate dataVisColor
+   *
+   * `i` is a series index number
+   *
+   * `rgb(r,g,b)` return the appropriate rgb values based in the series index
+   *
+   * @method _returnItemColor
+   * @param {i}
+   * @return {rgb}
+   */
+  _computeItemColor: function() {
+   if(this.hasUndefinedArguments(arguments)) {
+     return;
+   }
+
+    return this.completeSeriesConfig[this.item.name] && this.completeSeriesConfig[this.item.name]['color'] ? this.completeSeriesConfig[this.item.name]['color'] : 'transparent';
+  },
+
+  /**
+   * Function which takes an index and returns the appropriate dash pattern
+   *
+   * `e.g. pattern = "5,2"` return the appropriate svg stroke-dasharray value.
+   *
+   * @method _computeItemDashPattern
+   * @return {pattern}
+   */
+  _computeItemDashPattern: function() {
+   if(this.hasUndefinedArguments(arguments)) {
+     return;
+   }
+
+      return this.completeSeriesConfig[this.item.name] && this.completeSeriesConfig[this.item.name]['dashPattern'] ?
+          this.completeSeriesConfig[this.item.name]['dashPattern'] :
+          '';
+  },
+
+    /**
+   * helper function to set initial classes
+   *
+   * Adds or removes muted class to those series in the register
+   *
+   * @method _mutedToStart
+   */
+  _mutedToStart: function(name) {
+
+    if(this.mutedSeries[name]) {
+      return 'muted';
+    }
+    return '';
+  },
+
+  /**
+   * Event function which is fired when a series is clicked.
+   *
+   * Adds series to mutedSeries property or toggles that key's boolean.
+   *
+   * @method _seriesClicked
+   * @param {e} click event
+   */
+  _seriesClicked: function(e) {
+    if(!this.preventMuting) {
+      var ne = Polymer.dom(e),
+          series = ne.rootTarget.getAttribute('name');
+
+      //if we clicked through to something without a name (such as numbro-element), go up and find it
+      if(!series) {
+        for(var i = 1; i < ne.path.length; i++) {
+          if(ne.path[i].getAttribute && ne.path[i].getAttribute('id') === 'regItem') {
+            series = ne.path[i].getAttribute('name');
+            break;
+          }
+        }
+      }
+
+      this.muteUnmuteSeries(series.substr(1), true);
+      e.stopPropagation();
+    }
+  },
+
+  /**
+   * observer function which is fired when the mutedSeries property is changed.
+   *
+   * Adds or removes muted class to those series in the register.
+   *
+   * @method _toggleSeries
+   */
+  _toggleSeries: function(item) {
+    if(this.hasUndefinedArguments(arguments)) {
+      return;
+    }
+    //if it is a bool, we have something.
+    if(typeof this.mutedSeries[item.name] === 'boolean') {
+      this.toggleClass('muted', this.mutedSeries[item.name], this.$.regWithoutMenu);
+    }
+  },
+}, PxVisBehavior.observerCheck, PxVisBehavior.muteUnmuteSeries];
+
+
+
+</script>

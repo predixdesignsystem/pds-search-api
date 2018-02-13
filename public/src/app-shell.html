@@ -3,6 +3,7 @@
 <link rel="import" href="../bower_components/polymer/lib/elements/dom-if.html"/>
 <link rel="import" href="../bower_components/px-branding-bar/px-branding-bar.html"/>
 <link rel="import" href="../bower_components/px-dark-theme/px-dark-theme-styles.html"/>
+<link rel="import" href="../bower_components/px-simple-horizontal-bar-chart/px-simple-horizontal-bar-chart.html"/>
 <link rel="import" href="components/app-results-list.html"/>
 <link rel="import" href="../css/app-styles.html"/>
 
@@ -26,6 +27,38 @@
       </div>
       <div class="app-views">
         <app-results-list title="Views" results="[[views]]"></app-result-list>
+      </div>
+      <div class="app-views10d">
+          <p class="app-section-title">Views Last 10 days</p>
+          <p class="app-section-kpi">[[views10d]]</p>
+      </div>
+      <div class="app-views24h">
+          <p class="app-section-title">Views Last 24 hours</p>
+          <p class="app-section-kpi">[[views24h]]</p>
+      </div>
+      <div class="app-toppages">
+        <p class="app-section-title">Most Viewed Pages (10 Days)</p>
+        <div class="chart">
+          <px-simple-horizontal-bar-chart
+              width="auto"
+              height="auto"
+              bar-labels="values"
+              legend-labels="[[_getPagesChartLabels(topPages)]]"
+              chart-data="[[_getChartData(topPages)]]">
+          </px-simple-horizontal-bar-chart>
+        </div>
+      </div>
+      <div class="app-topsections">
+        <p class="app-section-title">Most Viewed Sections (10 Days)</p>
+        <div class="chart">
+            <px-simple-horizontal-bar-chart
+                width="auto"
+                height="auto"
+                bar-labels="values"
+                legend-labels="[[_getSectionsChartLabels(topSections)]]"
+                chart-data="[[_getChartData(topSections)]]">
+            </px-simple-horizontal-bar-chart>
+          </div>
       </div>
     </div>
   </template>

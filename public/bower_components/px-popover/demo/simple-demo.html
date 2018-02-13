@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>px-popover simple demo</title>
+  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+  <link rel="import" href="../../polymer/polymer.html" />
+  <link rel="import" href="../px-popover.html" />
+
+  <link rel="import" href="../../px-theme/px-theme-styles.html">
+
+</head>
+
+<body>
+  <custom-style>
+    <style include="px-theme-styles" is="custom-style"></style>
+  </custom-style>
+
+  <button style="margin:100px;" class="btn btn--tertiary" id="popover1" type="button" name="button">Click here</button>
+  <px-popover for="popover1" popover-title="Title" popover-body="This is a popover with content." >
+    <!-- <div>This is a form
+      <form>
+        <input class="text-input" type="text" value="Input">
+      </form>
+    </div> -->
+  </px-popover>
+
+</body>
+
+</html>

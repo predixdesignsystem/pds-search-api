@@ -17,6 +17,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
             super(...arguments);
             this.searches = [];
             this.views = [];
+            this.views10d = 'XXXX';
+            this.views24h = 'XXXX';
         }
         connectedCallback() {
             super.connectedCallback();
@@ -40,6 +42,25 @@ var __metadata = (this && this.__metadata) || function (k, v) {
                 const created = child._createdAt;
                 this.views = [{ label, value, created }, ...this.views];
             });
+            /* Fetch stats for the last 10 days */
+            fetch('https://us-central1-pds-search-api.cloudfunctions.net/stats10d')
+                .then(response => response.json())
+                .then((data) => {
+                this.views10d = data.totalViews10d + '';
+                this.views24h = data.totalViews24h + '';
+                this.topPages = data.topPages10d;
+                this.topSections = data.topSections10d;
+                console.log(data);
+            });
+        }
+        _getPagesChartLabels(pages) {
+            return pages.slice(0, 7).map(p => p.name);
+        }
+        _getSectionsChartLabels(sections) {
+            return sections.slice(0, 7).map(p => p.section);
+        }
+        _getChartData(source) {
+            return source.slice(0, 7).map(p => p.count);
         }
     };
     __decorate([
@@ -50,6 +71,22 @@ var __metadata = (this && this.__metadata) || function (k, v) {
         property({ type: Array }),
         __metadata("design:type", Array)
     ], AppShell.prototype, "views", void 0);
+    __decorate([
+        property({ type: String }),
+        __metadata("design:type", String)
+    ], AppShell.prototype, "views10d", void 0);
+    __decorate([
+        property({ type: String }),
+        __metadata("design:type", String)
+    ], AppShell.prototype, "views24h", void 0);
+    __decorate([
+        property({ type: Array }),
+        __metadata("design:type", Array)
+    ], AppShell.prototype, "topPages", void 0);
+    __decorate([
+        property({ type: Array }),
+        __metadata("design:type", Array)
+    ], AppShell.prototype, "topSections", void 0);
     AppShell = __decorate([
         customElement('app-shell')
     ], AppShell);

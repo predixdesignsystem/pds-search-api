@@ -15,7 +15,8 @@
     "px-theme": "^3.1.4",
     "px-branding-bar": "^1.1.0",
     "px-dark-theme": "^2.2.3",
-    "polymer-decorators": "Polymer/polymer-decorators#^1.0.2"
+    "polymer-decorators": "Polymer/polymer-decorators#^1.0.2",
+    "px-simple-horizontal-bar-chart": "^1.1.0"
   },
   "devDependencies": {
     "px-starter-kit-design": "^1.0.1",

@@ -1,0 +1,547 @@
+<link rel="import" href="../polymer/polymer.html"/>
+<link rel="import" href="px-vis-behavior-common.html" />
+<link rel="import" href="px-vis-behavior-d3.html" />
+<link rel="import" href="px-vis-behavior-datetime.html"/>
+<link rel="import" href="../px-tooltip/px-tooltip.html"/>
+<link rel="import" href="../px-icon-set/px-icon-set.html"/>
+<link rel="import" href="../app-localize-behavior/app-localize-behavior.html"/>
+<link rel="import" href="css/px-vis-styles.html">
+
+<!--
+
+### Usage
+
+    <px-vis-event
+        svg="[[svg]]"
+        x-axis-type="[[xAxisType]]"
+        clip-path="[[clipPath]]"
+        event-id="[[item.id]]"
+        chart-data="[[item]]"
+        x="[[x]]"
+        y="[[y]]"
+        event-config="[[eventConfig]]">
+    </px-vis-event>
+
+The configuration object allows developers to set the icon used for each event type.
+
+It should follow this form:
+
+    eventConfig = {
+      "Event Name 1":{
+        "color": "blue",
+        "icon": "px-fea:deployments",
+        "type": "px",
+        "offset":[0,0]
+      },
+      "Event Name 2":{
+        "color": "green",
+        "icon": "px-nav:favorite",
+        "type": "px",
+        "offset":[0,0],
+        "lineWeight": 0
+      },
+      "Event Name 3":{
+        "icon": "Dancing_banana.gif",
+        "type": "image",
+        "offset":[-2,-20],
+        "size":"25"
+      }
+    }
+
+### Styling
+The following custom properties are available for styling:
+
+Custom property | Description
+:----------------|:-------------
+  `--px-vis-event-line-color` | The default color for the vertical lines below the icon
+  `--px-vis-event-icon-color` | The default color for the event icon markers
+  |
+  |
+  |
+  `--px-tooltip-background-color` | The color of the tooltip
+  `--px-tooltip-text-color` | The color of the tooltip text
+  `--px-tooltip-light-background-color` | The color of the light version tooltip
+  `--px-tooltip-light-text-color` | The color of the light version tooltip text
+  `--px-tooltip-light-border-color`| The color of the light version tooltip border
+
+@element px-vis-event
+@blurb d3 element which draws a line and icon on the chart representing an event.
+@homepage index.html
+@demo demo.html
+-->
+
+<dom-module id="px-vis-event">
+    <template>
+      <style include="px-vis-styles"></style>
+      <template is="dom-if" if="[[_thisConfig.enableTooltip]]">
+        <px-tooltip
+          id="eventTooltip"
+          for="[[_getTooltiptarget(eventIcon)]]"
+          smart-orientation
+          delay="10"
+          orientation="[[tooltipOrientation]]">
+          <span>
+            <b>[[localize("Event")]]</b>: [[eventData.label]] <br/>
+            <b>[[localize("ID")]]</b>: [[eventData.id]] <br/>
+            <b>[[_getValueTitle(xAxisType, localize)]]</b>[[_value]]<br/>
+          </span>
+        </px-tooltip>
+      </template>
+    </template>
+</dom-module>
+
+<script>
+  Polymer({
+
+    is: 'px-vis-event',
+
+    behaviors: [
+      PxVisBehavior.observerCheck,
+      PxVisBehaviorD3.svg,
+      PxVisBehaviorD3.axes,
+      PxVisBehavior.sizing,
+      PxVisBehavior.axisTypes,
+      PxVisBehaviorTime.datetime,
+      PxVisBehaviorD3.clipPath,
+      PxVisBehavior.commonMethods,
+      PxVisBehavior.events,
+      PxVisBehaviorD3.domainUpdate,
+      Polymer.AppLocalizeBehavior,
+      PxVisBehaviorD3.icons,
+      PxVisBehavior.updateStylesOverride
+    ],
+
+    /**
+     * Properties block, expose attribute values to the DOM via 'reflect'
+     *
+     * @property properties
+     * @type Object
+     */
+    properties: {
+
+      /**
+       * Holder object for the event svg "g" element.
+       *
+       * @property eventGroup
+       * @type Object
+       */
+      eventGroup:{
+        type:Object,
+        value: function() { return {}; }
+      },
+      /**
+       * Holder object for the event svg "line" element.
+       *
+       * @property eventLine
+       * @type Object
+       */
+      eventLine:{
+        type:Object,
+        value: function() { return {}; }
+      },
+      /**
+       * Holder object for the event svg icon.
+       *
+       * @property eventIcon
+       * @type Object
+       */
+      eventIcon:{
+        type:Object,
+        value: function() { return {}; }
+      },
+      /**
+       * Computed configuration object based on custom styles and default styles.
+       *
+       * @property _thisConfig
+       * @type Object
+       */
+      _thisConfig:{
+        type:Object,
+      value: function() { return {}; }
+      },
+      /**
+       * Specifies the orientation of the event tooltip.
+       *
+       * @property tooltipOrientation
+       * @type String
+       */
+      tooltipOrientation: {
+        type: String,
+        value: 'left'
+      },
+      /**
+       * Specifies the x key for the event data.
+       *
+       */
+      xKey: {
+        type: String,
+        value: 'x'
+      },
+      /**
+       * Tracks if the event configuration has been edited.
+       *
+       */
+      _eventConfigChanged: {
+        type: Boolean,
+        value: false
+      },
+
+      _animationFrameDone: {
+        type: Boolean,
+        value: false
+      },
+
+      _eventDrawn: {
+        type: Boolean,
+        value: false
+      },
+
+      /**
+       * List of keys & values used for translating this component.
+       */
+      resources: {
+        type: Object,
+        value: function() {
+          return {
+            'en': {
+              'Event': 'Event',
+              'ID': 'ID',
+              'Timestamp': 'Timestamp',
+              'X': 'X'
+            }
+          };
+        }
+      },
+      /**
+       * A valid IETF language tag as a string that will be
+       * used to localize this component.
+       *
+       * See https://github.com/PolymerElements/app-localize-behavior for API
+       * documentation and more information.
+       */
+      language: {
+        type: String,
+        value: 'en'
+      },
+      /**
+      * Use the key for localization if value for language is missing.
+      * Should always be true for Predix components.
+      */
+     useKeyIfMissing: {
+       type: Boolean,
+       value: true
+     },
+
+
+      _hasBeenDetached: {
+        type: Boolean,
+        value: false
+      },
+
+      _reCalcValue: {
+        type: Boolean,
+        value: true
+      },
+
+      _value: {
+        type: String
+      }
+
+    },
+
+    observers: [
+      'drawElement(svg, eventData.*, eventConfig.*, _animationFrameDone, height, _stylesUpdated)',
+      '_calcThemeOrConfig(_stylesUpdated)',
+      '_eventConfigChanged(eventConfig.*)',
+      'positionElement(x, domainChanged)',
+      '_addClipPath(clipPath)',
+      '_recalcValue(eventData, xAxisType, eventConfig.*)'
+     ],
+
+     listeners: {
+      'px-tooltip-request-show': '_tooltipRequest'
+     },
+
+     detached: function() {
+       this._eventDrawn = false;
+
+       if(this.eventGroup && this._doesD3HaveValues(this.eventGroup)) {
+         this.eventGroup.remove();
+         this.eventGroup = null;
+         this.eventLine = null;
+         this.eventIcon = null;
+         this._hasBeenDetached = true
+       }
+     },
+
+
+    attached: function() {
+      if(this._hasBeenDetached) {
+        this._hasBeenDetached = false;
+        this.drawElement();
+      }
+    },
+
+    ready: function() {
+      window.requestAnimationFrame(function() {
+        this.updateStyles();
+      }.bind(this));
+      this._iconCallbackQueue = [this._addIcon,this.positionElement,this._addClipPath];
+    },
+
+    _tooltipRequest: function() {
+      //only format the value when we're actually about to show it
+      if(this._reCalcValue) {
+        this.set('_value', this._getValue());
+        this._reCalcValue = false;
+      }
+    },
+
+    _eventConfigChanged: function() {
+      if(this.hasUndefinedArguments(arguments)) {
+        return;
+      }
+
+      this._processConfiguration();
+    },
+
+    _recalcValue: function() {
+      if(this.hasUndefinedArguments(arguments)) {
+        return;
+      }
+
+      //recalc/format the value next time we show the tooltip
+      this._reCalcValue = true;
+    },
+
+    _getTooltiptarget: function() {
+      if(this.hasUndefinedArguments(arguments)) {
+        return;
+      }
+
+      return (this.eventIcon && this.eventIcon.node) ? this.eventIcon.node() : null;
+    },
+
+    _calcThemeOrConfig: function() {
+
+      if(!this.defaultEventConfig) {
+
+        this.defaultEventConfig = {
+          'color': this._defaultDefaultEventConfig.fillColor,
+          'icon': this._defaultDefaultEventConfig.icon,
+          'type': this._defaultDefaultEventConfig.type,
+          'offset': this._defaultDefaultEventConfig.offset,
+          'size': this._defaultDefaultEventConfig.size,
+          'lineColor': this._defaultDefaultEventConfig.lineColor,
+          'lineWeight': this._defaultDefaultEventConfig.lineWeight,
+          'enableTooltip': this._defaultDefaultEventConfig.enableTooltip,
+          'firstDateTimeFormat': this._defaultDefaultEventConfig.firstDateTimeFormat,
+          'secondDateTimeFormat': this._defaultDefaultEventConfig.secondDateTimeFormat,
+          'separator': this._defaultDefaultEventConfig.separator,
+          'timezone': this._defaultDefaultEventConfig.timezone,
+          'tooltipOrientation': this._defaultDefaultEventConfig.tooltipOrientation
+        };
+      }
+
+      this.defaultEventConfig.lineColor = this._checkThemeVariable("--px-vis-event-line-color", this._defaultDefaultEventConfig.lineColor);
+      this.defaultEventConfig.eventColor = this._checkThemeVariable("--px-vis-event-icon-color", this._defaultDefaultEventConfig.fillColor);
+
+      this.set('_animationFrameDone', true);
+    },
+
+    /**
+     * Draws or updates the event element.
+     * Called from an observer watching for data and the necessary d3 objects.
+     *
+     * @method drawElement
+     */
+    drawElement: function() {
+     if(this.hasUndefinedArguments(arguments)) {
+       return;
+     }
+
+      if(this.svg && this._doesObjHaveValues(this.eventData) && this._animationFrameDone) {
+
+        if(this.eventGroup && this._doesD3HaveValues(this.eventGroup)) {
+          this._eventDrawn = false;
+          this.eventGroup.remove();
+          this.eventGroup = null;
+        }
+
+        this._processConfiguration();
+
+        this.eventGroup = this.svg.append('g')
+          .attr('class','event')
+          .attr('pointer-events', 'all');
+
+        // draw the path
+        this.eventLine = this.eventGroup.append("line")
+          .attr('stroke', this._checkColorType(this._thisConfig.lineColor))
+          .attr('stroke-width', this._thisConfig.lineWeight);
+
+        this._addIcon();
+
+        this.positionElement();
+
+        this._addClipPath();
+
+        //check if we want a tooltip
+        this.notifyPath('_thisConfig.enableTooltip')
+      }
+    },
+
+
+    /**
+     * Updates the position of the event.
+     * Called from an observer watching for data and the necessary d3 objects.
+     *
+     * @method positionElement
+     */
+    positionElement: function() {
+     if(this.hasUndefinedArguments(arguments)) {
+       return;
+     }
+
+      if(this.x && this._eventDrawn) {
+        this._positionEvent();
+      }
+    },
+
+    /**
+     * Helper to call addClipPath with the element.
+     *
+     * @method _addClipPath
+     */
+    _addClipPath: function() {
+     if(this.hasUndefinedArguments(arguments)) {
+       return;
+     }
+
+      this.addClipPath(this.eventLine);
+      this.addClipPath(this.eventIcon);
+    },
+
+    /**
+     * Sets the position for the event line and icon.
+     *
+     * @method _positionEvent
+     */
+    _positionEvent: function() {
+      this.eventLine
+        .attr("x1", this.x(this.eventData[this.xKey]))
+        .attr("x2", this.x(this.eventData[this.xKey]))
+        .attr("y1", Math.max(this.height - this.margin.top, 0))
+        .attr("y2", 0);
+
+      var x = this.x(this.eventData[this.xKey]) -
+                Number(this._thisConfig.size)/2 + this._thisConfig.offset[0],
+          y0 = 0 - 5 + this._thisConfig.offset[1],
+          y = this._thisConfig.type === "image" ? y0 : y0 - this._thisConfig.size;
+          translate = "translate(" + x + "," + y + ")",
+          scale = this._thisConfig.type === "image" ? '' : " scale(" + this._iconScale + ")";
+
+      this.eventIcon
+        .attr("transform", (translate + scale));
+    },
+
+    _addIcon: function() {
+      if(this._thisConfig.type === 'image') {
+        this.eventIcon = this.eventGroup.append("image")
+          .attr("xlink:href", this._thisConfig.icon)
+          .attr("width", this._thisConfig.size + 'px')
+          .attr("height", this._thisConfig.size + 'px')
+          .style("cursor","pointer");
+      } else {
+        var icon = this._getIcon(this._thisConfig.icon, this._thisConfig.size, 'px-utl', 'information');
+
+        if(!icon) {
+          this._eventDrawn = false;
+          return;
+        }
+
+        this.eventIcon = Px.d3.select(this.eventGroup.node().appendChild(icon))
+          .attr('fill', 'transparent')
+          .attr('stroke', this._thisConfig.color)
+          .style("cursor","pointer");
+      }
+
+      this._eventDrawn = true;
+
+    },
+
+    /**
+     * Compiles a configuration object by looking if there is a custom style, or if it should use defaults.
+     *
+     * @method _processConfiguration
+     */
+    _processConfiguration: function() {
+
+      // is there a configuration object for this event type?
+      if(this.eventConfig[this.eventData.label]) {
+        /*
+          check each key (icon, color, etc) of the defaultEventConfig and see if the eventConfig is overwriting that property. If so, set it, otherwise use default
+        */
+        var k = Object.keys(this.defaultEventConfig),
+            i,
+            len = k.length;
+        for(i = 0; i < len; i++){
+          this._thisConfig[k[i]] =  this.eventConfig[this.eventData.label][k[i]] || this.eventConfig[this.eventData.label][k[i]] === 0 || this.eventConfig[this.eventData.label][k[i]] === false ? this.eventConfig[this.eventData.label][k[i]] : this.defaultEventConfig[k[i]];
+        }
+
+        //process special config........................
+        if(this._thisConfig.firstDateTimeFormat) {
+          this.firstDateTimeFormat = this._thisConfig.firstDateTimeFormat;
+        }
+        if(this._thisConfig.secondDateTimeFormat) {
+          this.secondDateTimeFormat = this._thisConfig.secondDateTimeFormat;
+        }
+        if(this._thisConfig.timezone) {
+          this.timezone = this._thisConfig.timezone;
+        }
+        if(this._thisConfig.tooltipOrientation) {
+          this.set('tooltipOrientation', this._thisConfig.tooltipOrientation);
+        }
+        if(this._thisConfig.separator) {
+          this.separator = this._thisConfig.separator;
+        }
+        if(typeof this._thisConfig.enableTooltip !== "undefined") {
+          this.notifyPath('_thisConfig.enableTooltip');
+        }
+      } else {
+        // else, set everything to default
+        this._thisConfig = this.defaultEventConfig;
+      }
+    },
+    /**
+     * Formats the datetime to match the custom format.
+     *
+     * @method _formatDatetime
+     */
+    _formatDatetime: function(time,format) {
+      return this.formatTimestamp(time, this.timezone, format);
+    },
+    /**
+     * Returns the title value to the tooltip.
+     *
+     */
+    _getValueTitle: function(xAxisType) {
+      if(xAxisType === 'time' || xAxisType === 'timeLocal') {
+        return this.localize('Timestamp');
+      } else {
+        return this.localize('X');
+      }
+    },
+    /**
+     * Returns the x value.
+     *
+     */
+    _getValue: function(xAxisType) {
+      if(this.xAxisType === 'time' || this.xAxisType === 'timeLocal') {
+        return ': ' + this._formatDatetime(this.eventData[this.xKey], this.firstDateTimeFormat) +
+          ' ' + this.separator + ' ' + this._formatDatetime(this.eventData[this.xKey], this.secondDateTimeFormat);
+      } else {
+        return ': ' + this.eventData[this.xKey];
+      }
+    }
+  });
+</script>

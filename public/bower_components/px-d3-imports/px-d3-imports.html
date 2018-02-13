@@ -1,0 +1,195 @@
+<!-- Import d3 without overwriting other people's d3. Maintain a link to the
+     Px version of d3. -->
+
+<link rel="import" href="px-d3-imports-step-one.html" />
+<link rel="import" href="../polymer/polymer.html" />
+<link rel="import" href="../promise-polyfill/promise-polyfill-lite.html">
+<link rel="import" href="../iron-ajax/iron-ajax.html" />
+<script>
+
+Px.d3 = d3;
+
+if(typeof Px.oldD3 !== 'undefined') {
+  d3 = Px.oldD3;
+}
+
+//functions to change d3 locale
+(function() {
+
+  var requestor = document.createElement('iron-ajax'),
+      requests = {};
+  requestor.handleAs = 'json';
+
+  requestor.addEventListener('iron-ajax-response', function(e) {
+
+    //if time locale vs locale
+    if(requests[e.detail.url].type === 'time') {
+      Px.d3.timeFormatDefaultLocale(e.detail.response);
+    } else {
+      Px.d3.formatDefaultLocale(e.detail.response);
+    }
+
+    if(requests[e.detail.url].callback) {
+      requests[e.detail.url].callback();
+    }
+
+    delete requests[e.detail.url];
+  });
+
+  requestor.addEventListener('iron-ajax-error', function(e) {
+
+    //error loading
+    var request = e.detail.request;
+        d3Url = requests[request.url].type === 'time' ? 'https://github.com/d3/d3-time-format/blob/master/README.md#timeFormatDefaultLocale' : 'https://github.com/d3/d3-format#formatDefaultLocale';
+    console.warn('couldn\'t find d3 ' + requests[request.url].type + ' locale for ' + requests[request.url].localeName + '. Consider providing your own: ' + d3Url);
+
+    delete requests[request.url];
+  });
+
+  /**
+   * List of out-of-the-box supported timeLocale:
+   * - ca-ES
+   * - cs-CZ
+   * - de-CH
+   * - de-DE
+   * - en-CA
+   * - en-GB
+   * - en-US
+   * - es-ES
+   * - es-MX
+   * - fi-FI
+   * - fr-CA
+   * - fr-FR
+   * - he-IL
+   * - hu-HU
+   * - it-IT
+   * - ja-JP
+   * - ko-KR
+   * - mk-MK
+   * - nl-NL
+   * - pl-PL
+   * - pt-BR
+   * - ru-RU
+   * - sv-SE
+   * - uk-UA
+   * - zh-CN
+   * If you want to use another one you'll need provide your own config object:
+   * https://github.com/d3/d3-time-format/blob/master/README.md#timeFormatDefaultLocale
+   */
+  Px.d3.changeTimeLocale = function(newLocale, callback, configObject) {
+
+    if(!configObject) {
+
+      if(!Px.d3.timeLocaleURL) {
+        // NOTE: see http://www.2ality.com/2014/05/current-script.html
+        var currentScript = document._currentScript || document.currentScript ||
+            (function() {
+              var scripts = document.getElementsByTagName('script');
+              return scripts[scripts.length - 1];
+            })();
+        var BASE_URI = currentScript.ownerDocument.baseURI;
+        Px.d3.timeLocaleURL =  Polymer.ResolveUrl.resolveUrl('./px-d3-imports/timeLocale/', BASE_URI);
+      }
+
+      //try to get the locale ourselves
+      requestor.url = Px.d3.timeLocaleURL + newLocale + '.json';
+      requests[requestor.url] = {
+        'type': 'time',
+        'localeName': newLocale,
+        'callback': callback
+      };
+      requestor.generateRequest();
+
+    } else {
+      Px.d3.timeFormatDefaultLocale(configObject);
+    }
+  };
+  /**
+   * List of out of the box supported numberLocale:
+   * - ar-001
+   * - ar-AE
+   * - ar-BH
+   * - ar-DJ
+   * - ar-DZ
+   * - ar-EG
+   * - ar-EH
+   * - ar-ER
+   * - ar-IL
+   * - ar-IQ
+   * - ar-JO
+   * - ar-KM
+   * - ar-KW
+   * - ar-LB
+   * - ar-LY
+   * - ar-MA
+   * - ar-MR
+   * - ar-OM
+   * - ar-PS
+   * - ar-QA
+   * - ar-SA
+   * - ar-SD
+   * - ar-SO
+   * - ar-SS
+   * - ar-SY
+   * - ar-TD
+   * - ar-TN
+   * - ar-YE
+   * - ca-ES
+   * - cs-CZ
+   * - de-CH
+   * - de-DE
+   * - en-CA
+   * - en-GB
+   * - en-IN
+   * - en-US
+   * - es-ES
+   * - es-MX
+   * - fi-FI
+   * - fr-CA
+   * - fr-FR
+   * - he-IL
+   * - hu-HU
+   * - it-IT
+   * - ja-JP
+   * - ko-KR
+   * - mk-MK
+   * - nl-NL
+   * - pl-PL
+   * - pt-BR
+   * - ru-RU
+   * - sv-SE
+   * - uk-UA
+   * - zh-CN
+   * If you want to use another one you'll need provide your own config object:
+   * https://github.com/d3/d3-format/blob/master/README.md#formatDefaultLocale
+   */
+   Px.d3.changeNumberLocale = function(newLocale, callback, configObject) {
+
+    if(!configObject) {
+
+      if(!Px.d3.numberLocaleURL) {
+        // NOTE: see http://www.2ality.com/2014/05/current-script.html
+        var currentScript = document._currentScript || document.currentScript ||
+            (function() {
+              var scripts = document.getElementsByTagName('script');
+              return scripts[scripts.length - 1];
+            })();
+        var BASE_URI = currentScript.ownerDocument.baseURI;
+        Px.d3.numberLocaleURL =  Polymer.ResolveUrl.resolveUrl('./px-d3-imports/numberLocale/', BASE_URI);
+      }
+
+      //try to get the locale ourselves
+      requestor.url = Px.d3.numberLocaleURL + newLocale + '.json';
+      requests[requestor.url] = {
+        'type': 'number',
+        'localeName': newLocale,
+        'callback': callback
+      };
+      requestor.generateRequest();
+
+    } else {
+      Px.d3.formatDefaultLocale(configObject);
+    }
+  };
+})()
+</script>

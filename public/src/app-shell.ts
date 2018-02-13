@@ -1,6 +1,23 @@
 {
   const {customElement, property} = Polymer.decorators;
 
+  interface StatsResponse {
+    totalViews10d: number; 
+    totalViews24h: number;
+    topPages10d: StatsPage[];
+    topSections10d: StatsSection[];
+  }
+
+  interface StatsPage {
+    name: string;
+    count: number
+  }
+
+  interface StatsSection {
+    section: string;
+    count: number;
+  }
+
   // Gesture events like tap and track generated from touch will not be
   // preventable, allowing for better scrolling performance.
   Polymer.setPassiveTouchGestures(true);
@@ -12,6 +29,18 @@
 
     @property({ type: Array })
     views: Result[] = [];
+
+    @property({ type: String })
+    views10d: string = 'XXXX';
+
+    @property({ type: String })
+    views24h: string = 'XXXX';
+
+    @property({ type: Array })
+    topPages: StatsPage[];
+
+    @property({ type: Array })
+    topSections: StatsSection[];
 
     connectedCallback() {
       super.connectedCallback();
@@ -37,6 +66,29 @@
         const created = child._createdAt;
         this.views = [{label, value, created}, ...this.views];
       });
+
+      /* Fetch stats for the last 10 days */
+      fetch('https://us-central1-pds-search-api.cloudfunctions.net/stats10d')
+        .then(response => response.json())
+        .then((data: StatsResponse) => {
+          this.views10d = data.totalViews10d + '';
+          this.views24h = data.totalViews24h + '';
+          this.topPages = data.topPages10d;
+          this.topSections = data.topSections10d;
+          console.log(data);
+        });
+    }
+
+    _getPagesChartLabels(pages: StatsPage[]) {
+      return pages.slice(0,7).map(p => p.name);
+    }
+
+    _getSectionsChartLabels(sections: StatsSection[]) {
+      return sections.slice(0,7).map(p => p.section);
+    }
+
+    _getChartData(source: Array<StatsPage|StatsSection>) {
+      return source.slice(0,7).map(p => p.count);
     }
   }
 

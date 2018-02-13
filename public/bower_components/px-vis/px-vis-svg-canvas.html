@@ -1,0 +1,132 @@
+<link rel="import" href="../polymer/polymer.html"/>
+<link rel="import" href="px-vis-behavior-common.html" />
+<link rel="import" href="px-vis-behavior-d3.html" />
+<link rel="import" href="px-vis-svg.html" />
+<link rel="import" href="px-vis-canvas.html" />
+<link rel="import" href="css/px-vis-svg-canvas-styles.html">
+
+
+<!--
+
+### Usage
+
+    <px-vis-svg-canvas
+        svg="{{svg}}"
+        canvas-context="{{canvasContext}}"
+        svg-lower="{{svgLower}}"
+        width="[[width]]"
+        height="[[height]]"
+        margin="[[margin]]">
+    </px-vis-svg-canvas>
+
+@element px-vis-svg
+@blurb Element which creates 2 SVG elements, and a canvas element between the two svg elements.
+@homepage index.html
+@demo demo.html
+-->
+
+
+<dom-module id="px-vis-svg-canvas">
+  <template>
+    <style include="px-vis-svg-canvas-styles"></style>
+    <style>
+      .noPointer {
+        pointer-events: none;
+      }
+    </style>
+
+    <div
+      class="rel-container"
+      style$="height:[[height]]px; width:[[width]]px">
+      <slot name="0"></slot>
+      <px-vis-svg
+        class="abs-elem inline--flex"
+        svg="{{svgLower}}"
+        px-svg-elem="{{pxSvgElemLower}}"
+        width="[[width]]"
+        height="[[height]]"
+        margin="[[margin]]"
+        offset="[[offset]]">
+      </px-vis-svg>
+      <slot name="1"></slot>
+      <px-vis-canvas
+        class="abs-elem inline--flex"
+        canvas-context="{{canvasContext}}"
+        width="[[width]]"
+        height="[[height]]"
+        margin="[[margin]]"
+        offset="[[offset]]">
+      </px-vis-canvas>
+
+      <slot name="2"></slot>
+      <template id="canvasTemplate" is="dom-repeat" items="[[_returnKeys(canvasLayersConfig.*, width, height, margin.*, offset.*)]]">
+        <px-vis-canvas
+          class="abs-elem inline--flex"
+          width="[[_returnProp(item, 'width', canvasLayersConfig.*, width)]]"
+          height="[[_returnProp(item, 'height', canvasLayersConfig.*, height)]]"
+          margin="[[_returnProp(item, 'margin', canvasLayersConfig.*, margin)]]"
+          offset="[[_returnProp(item, 'offset', canvasLayersConfig.*, offset)]]">
+        </px-vis-canvas>
+      </template>
+
+      <slot name="3"></slot>
+      <px-vis-svg
+        class="abs-elem inline--flex noPointer"
+        svg="{{svg}}"
+        px-svg-elem="{{pxSvgElem}}"
+        width="[[width]]"
+        height="[[height]]"
+        margin="[[margin]]"
+        offset="[[offset]]">
+      </px-vis-svg>
+      <slot name="4"></slot>
+    </div>
+  </template>
+</dom-module>
+
+<script>
+    Polymer({
+
+        is: 'px-vis-svg-canvas',
+        behaviors: [
+          PxVisBehavior.sizing,
+          PxVisBehaviorD3.canvasContext,
+          PxVisBehaviorD3.svg,
+          PxVisBehaviorD3.svgLower
+        ],
+
+        /**
+         * Properties block, expose attribute values to the DOM via 'reflect'
+         *
+         * @property properties
+         * @type Object
+         */
+        properties: {
+
+        },
+
+        listeners: {
+          'px-vis-canvas-context-updated': '_assignCanvas',
+        },
+
+        _assignCanvas: function(evt) {
+          var normalized = Polymer.dom(evt),
+              key = this.$.canvasTemplate.itemForElement(normalized.rootTarget);
+
+          if(key) {
+            this.set('canvasLayers.' + key, evt.detail.data);
+          }
+        },
+
+        _returnKeys: function() {
+          return Object.keys(this.canvasLayersConfig)
+        },
+
+        _returnProp: function(item, prop) {
+          if(this.canvasLayersConfig[item][prop]) {
+            return this.canvasLayersConfig[item][prop];
+          }
+          return this[prop];
+        }
+    });
+</script>

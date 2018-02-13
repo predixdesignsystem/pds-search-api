@@ -1,0 +1,17 @@
+<script>
+
+  if(typeof Px === 'undefined') {
+    Px = {};
+  }
+
+  //if someone loaded moment already keep a ref to
+  //it so we can restore it after having loaded our version
+  if(typeof moment !== 'undefined' && !Px.moment) {
+    Px.oldMoment = moment;
+    moment = {};
+  }
+
+</script>
+
+<script type="text/javascript" src="../moment/min/moment.min.js"></script>
+<script type="text/javascript" src="../pxmoment-timezone/builds/moment-timezone-with-data.min.js"></script>

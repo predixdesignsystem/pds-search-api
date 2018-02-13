@@ -1,0 +1,316 @@
+<link rel="import" href="../polymer/polymer.html"/>
+<link rel="import" href="px-vis-behavior-common.html"/>
+<link rel="import" href="px-vis-behavior-register.html"/>
+<link rel="import" href="px-vis-dynamic-menu.html"/>
+<link rel="import" href="../px-number-formatter/px-number-formatter.html" />
+<link rel="import" href="css/px-vis-register-styles.html">
+
+<!--
+
+### Usage
+
+    <px-vis-register-item
+        item="[[item]]"
+        complete-series-config="[[completeSeriesConfig]]"
+        type="[[type]]"
+        x-axis-type="[[xAxisType]]"
+        y-axis-type="[[yAxisType]]">
+    </px-vis-register-item>
+
+### Styling
+The following custom properties are available for styling:
+
+Custom property | Description
+:----------------|:-------------
+  `--px-register-series-marker-width` | The width (thickness) of the series marker
+  `--px-vis-register-series-name` | The color of the data series name
+  `--px-vis-register-data-value` | The color of the data series value
+  `--px-vis-register-box` | The color of the box around the register when a scrollbar is present
+  |
+  |
+  |
+  `--px-tooltip-background-color` | The color of the tooltip
+  `--px-tooltip-text-color` | The color of the tooltip text
+  `--px-tooltip-light-background-color` | The color of the light version tooltip
+  `--px-tooltip-light-text-color` | The color of the light version tooltip text
+  `--px-tooltip-light-border-color`| The color of the light version tooltip border
+
+@element px-vis-register-item
+@blurb Element providing a series line items on the register for regular charts
+@homepage index.html
+@demo demo.html
+-->
+
+<dom-module id="px-vis-register-item">
+
+  <template>
+    <style include="px-vis-register-styles"></style>
+    <style>
+      :host {
+        /*  Fix for Safari flex bug:
+            https://philipwalton.com/articles/normalizing-cross-browser-flexbox-bugs/
+            Demo of bug: http://jsbin.com/xetinivozo/1/edit?html,js,output
+        */
+        flex-shrink: 0;
+      }
+    </style>
+    <span
+      class$="[[_baseClasses]] register-item--min-width"
+      name$="R[[item.name]]"
+      id="regItem">
+      <span
+        class$="flex [[_itemMutedToStart]]"
+        on-tap="_seriesClicked"
+        id="regWithoutMenu">
+        <span class="seriesMarker flex">
+          <span
+            class="seriesMarkerIcon"
+            style$="[[_calcDashPattern(_itemColor,_dashPattern)]];"
+            name$="R{{item.name}}">&nbsp;</span>
+        </span>
+        <span class$="[[_wrapperClass]]">
+          <div
+            class="seriesName flex__item--msfix"
+            name$="R[[item.name]]">
+            [[_truncatedName]]&nbsp;
+            <template is="dom-if" if="[[_didTruncate]]">
+              <px-tooltip delay="500">[[_configName]]</px-tooltip>
+            </template>
+          </div>
+          <!-- Display serie data differently depending on x and y axis types -->
+          <!-- Use inline flex to avoid the browser adding spaces between our sub elements-->
+          <div class="seriesData flex__item--msfix" name$="R{{item.name}}">
+            <!-- if x axis is number format and show it -->
+            <template is="dom-if" if="[[_checkLinearType(xAxisType)]]" on-dom-change="_xFormatterChanged" strip-whitespace>
+              <px-number-formatter
+                id="xFormatter"
+                class$="[[_ttStyle]]"
+                format="[[numberFormat]]"
+                culture="[[numberFormatCulture]]"
+                currency$="[[numberFormatIsCurrency]]"
+                default-currency-format="[[numberFormatCurrency]]"
+                zero-format="[[numberFormatZero]]">&nbsp;
+              </px-number-formatter>[[_xUnit]][[_slash]]
+            </template>
+            <!-- if x axis is ordinal just display it -->
+            <template is="dom-if" if="[[_isOfType(xAxisType, 'ordinal')]]" on-dom-change="_xSpanChanged" strip-whitespace>
+              <span id="xSpan">[[_itemX]]</span>[[_xUnit]][[_slash]]&nbsp;
+            </template>
+            <!-- if x axis is time don't display it -->
+            <!-- if y axis is number format and show it -->
+              <template is="dom-if" if="[[_checkLinearType(yAxisType)]]" on-dom-change="_yFormatterChanged" strip-whitespace>
+                <px-number-formatter
+                  id="yFormatter"
+                  class$="[[_ttStyle]]"
+                  format="[[numberFormat]]"
+                  culture="[[numberFormatCulture]]"
+                  currency$="[[numberFormatIsCurrency]]"
+                  default-currency-format="[[numberFormatCurrency]]"
+                  zero-format="[[numberFormatZero]]">&nbsp;
+                </px-number-formatter>
+              </template>
+              <!-- if y axis is ordinal just display it -->
+              <template is="dom-if" if="[[_isOfType(yAxisType, 'ordinal')]]" on-dom-change="_ySpanChanged" strip-whitespace>
+                <span id="ySpan">[[_itemY]]</span>
+              </template>[[_yUnit]]
+            </div>
+          </span>
+        </span>
+        <template id="menuTemplate" is="dom-if" if="[[_hasDynamicMenu]]">
+          <px-vis-dynamic-menu
+              id="menu"
+              class$="[[_getDynamicMenuClass(type)]]"
+              style="display: none"
+              additional-detail="[[item]]"
+              dynamic-menu-config="[[dynamicMenuConfig]]">
+          </px-vis-dynamic-menu>
+        </template>
+      </span>
+  </template>
+</dom-module>
+
+<script>
+  Polymer({
+    is: 'px-vis-register-item',
+
+    behaviors: [
+      PxVisBehavior.observerCheck,
+      PxVisBehavior.formatting,
+      PxVisBehavior.completeSeriesConfig,
+      PxVisBehavior.truncating,
+      PxVisBehavior.mutedSeries,
+      PxVisBehavior.axisTypes,
+      PxVisBehaviorRegister.register,
+      PxVisBehaviorRegister.itemShared,
+      PxVisBehaviorRegister.generalItem,
+      PxVisBehaviorRegister.disableClick
+    ],
+    properties: {
+      /**
+       * The units for the x value.
+       */
+      _xUnit: {
+        type: String
+      },
+      /**
+       * The units for the y value.
+       */
+      _yUnit: {
+        type: String
+      },
+      /**
+       * Calculates the value for x.
+       */
+      _itemX: {
+        type: Number,
+        notify: false
+      },
+      _slash: {
+        type: String
+      },
+      /**
+       * Calculates the value of y.
+       */
+      _itemY: {
+        type: Number,
+        notify: false
+      },
+      /**
+      * Used to style the px-number-formatter to match the register styling.
+      * Should be 'light' or 'dark'.
+      */
+      _ttStyle: {
+        type: String
+      }
+    },
+
+    observers: [
+      '_toggleSeries(item,mutedSeries.*)',
+      '_disableClickFunc(disableClick)',
+      '_computeItem(item, completeSeriesConfig.*)'
+    ],
+
+    _xFormatterChanged: function() {
+      this.$.xFormatter = Polymer.dom(this.root).querySelector('#xFormatter');
+      this._computeItem(this.item, this.completeSeriesConfig);
+    },
+    _yFormatterChanged: function() {
+      this.$.yFormatter = Polymer.dom(this.root).querySelector('#yFormatter');
+      this._computeItem(this.item, this.completeSeriesConfig);
+    },
+    _xSpanChanged: function() {
+      this.$.xSpan = Polymer.dom(this.root).querySelector('#xSpan');
+      this._computeItem(this.item, this.completeSeriesConfig);
+    },
+    _ySpanChanged: function() {
+      this.$.ySpan = Polymer.dom(this.root).querySelector('#ySpan');
+      this._computeItem(this.item, this.completeSeriesConfig);
+    },
+
+    _computeItem: function(item, completeSeriesConfig) {
+      if(this.hasUndefinedArguments(arguments)) {
+        return;
+      }
+
+      // this was moved to manual instead of a binding for performance reasons which may or may not legit. One day we should revisit and see if it really matters
+      this.debounce("numberFormatterValues", function() {
+        if(this.completeSeriesConfig && this.completeSeriesConfig[item.name]) {
+
+          var xKey = this.completeSeriesConfig[item.name]['x'],
+              yKey = this.completeSeriesConfig[item.name]['y'];
+
+          //process X val
+          if(item.value && (item.value[xKey] || item.value[xKey] === 0)) {
+            //manually assign value rather than bind because we needs the
+            //perf boost here (this might me called a lot wqhen hovering the
+            //chart and having a lot of different series
+            if(this.$.xFormatter) {
+              this.$.xFormatter.set('value', item.value[xKey]);
+            } else if(this.$.xSpan) {
+              this.$.xSpan.textContent = item.value[xKey];
+            }
+            this.set('_slash', ' / ');
+            this.set('_xUnit', this.completeSeriesConfig[item.name]['xAxisUnit']);
+          } else {
+            if(this.$.xFormatter) {
+              this.$.xFormatter.set('value', null);
+            } else if(this.$.xSpan) {
+              this.$.xSpan.textContent = null;
+            }
+            this.set('_slash', '');
+            this.set('_xUnit', '');
+          }
+
+          //process Y val
+          if(item.value && (item.value[yKey] || item.value[yKey] === 0)) {
+            //manually assign value rather than bind because we needs the
+            //perf boost here (this might me called a lot wqhen hovering the
+            //chart and having a lot of different series
+            if(this.$.yFormatter) {
+              this.$.yFormatter.set('value', item.value[yKey]);
+            } else if(this.$.ySpan) {
+              this.$.ySpan.textContent = item.value[yKey];
+            }
+            this.set('_yUnit', this.completeSeriesConfig[item.name]['yAxisUnit']);
+          } else {
+            if(this.$.yFormatter) {
+              this.$.yFormatter.set('value', null);
+            } else if(this.$.ySpan) {
+              this.$.ySpan.textContent = null;
+            }
+            this.set('_yUnit', '');
+          }
+        }
+      }, 10);
+    },
+
+    _disableClickFunc: function(disableClick) {
+      if(this.hasUndefinedArguments(arguments)) {
+        return;
+      }
+
+      if(disableClick) {
+        this.unlisten(this.$.regWithoutMenu, "tap", '_seriesClicked');
+      }
+    },
+
+    /**
+     * Returns a striped pattern that can be used by background:linear-gradient(...) to represent a dashed vertical line.
+     *
+     * ex:  'to bottom, red 0px, red 5px, transparent 5px, transparent 10px, [repeat]'
+     */
+    _calcDashPattern: function(color, pattern) {
+     if(this.hasUndefinedArguments(arguments)) {
+       return;
+     }
+
+      var patternItems = pattern.split(',');
+      // FIXME need to find a better way of doing this so it matches the SASS set height...
+      // Does the height of hte dash pattern really matter? What happens is it goes to 100 and height is only 25?
+      var HEIGHT = 25;
+      if (!patternItems || patternItems.length < 2) {
+        return 'background-color:' + color;
+
+      } else {
+        var result = 'to bottom';
+        var position = 0;
+        while (position < HEIGHT) {
+          for (var i=0;i<patternItems.length;i++) {
+            var item = patternItems[i];
+            var stripeColor = i % 2 ? 'transparent' : color;
+            result += ", " + stripeColor + " " + position + "px";
+            // result += `, ${stripeColor} ${position}px`;
+            position += parseInt(item, 10);
+            result += ", " + stripeColor + " " + position + "px";
+            // result += `, ${stripeColor} ${position}px`;
+          }
+        }
+        return 'background:linear-gradient(' + result + '); border-bottom: 1px solid ' + color;
+      }
+    },
+
+    _checkLinearType: function(axis) {
+      return this._isOfType(axis, ['linear','log']);
+    }
+  });
+</script>

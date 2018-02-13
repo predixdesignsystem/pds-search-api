@@ -1,0 +1,58 @@
+{
+  "name": "px-d3-imports",
+  "version": "2.1.0",
+  "main": [
+    "px-d3-imports.html"
+  ],
+  "ignore": [
+    "*.enc",
+    ".*",
+    "npm-debug.log",
+    "gulpfile.js",
+    "sass",
+    "bower_components",
+    "node_modules",
+    "test",
+    "OSS_Notice.pdf",
+    "scripts",
+    ".github",
+    "px-d3-imports.png",
+    "LICENSE.md",
+    "CONTRIBUTING.md",
+    "HISTORY.md",
+    "README.md",
+    ".jshintrc",
+    ".editorconfig"
+  ],
+  "dependencies": {
+    "pxd3": "d3#^4.7.0",
+    "polymer": "#1.9 - 2",
+    "iron-ajax": "^2.0.0",
+    "promise-polyfill": "polymerlabs/promise-polyfill#^2.0.0"
+  },
+  "devDependencies": {
+    "d3": "^3.0.0",
+    "web-component-tester": "^6.0.0"
+  },
+  "resolutions": {
+    "webcomponentsjs": "^1.0.0"
+  },
+  "variants": {
+    "1.x": {
+      "dependencies": {
+        "pxd3": "d3#^4.7.0",
+        "polymer": "^1.9.0",
+        "iron-ajax": "^2.0.0",
+        "promise-polyfill": "polymerlabs/promise-polyfill#^2.0.0"
+      },
+      "devDependencies": {
+        "web-component-tester": "^5.0.0",
+        "d3": "^3.0.0"
+      },
+      "resolutions": {
+        "webcomponentsjs": "^0.7.24",
+        "promise-polyfill": "^2.0.0"
+      }
+    }
+  }
+}

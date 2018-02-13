@@ -1,0 +1,20 @@
+{
+    "name": "px-moment-imports",
+    "author": "General Electric",
+    "description": "A Px component",
+    "version": "1.1.0",
+    "private": true,
+    "extName" : null,
+    "repository" :
+    {
+        "type": "git",
+        "url": "https://github.com/PredixDev/px-moment-imports.git"
+    },
+    "homepage": "http://predix.io/",
+    "devDependencies": {
+      "node-sass-import-once": "^1.2.0",
+      "stream-combiner2": "^1.1.1",
+      "yargs": "^6.0.0",
+      "polymer-cli": "^1.5.7"
+    }
+}

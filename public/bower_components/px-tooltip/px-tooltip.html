@@ -1,0 +1,957 @@
+<link rel="import" href="../polymer/polymer.html"/>
+<link rel="import" href="../iron-resizable-behavior/iron-resizable-behavior.html"/>
+<link rel="import" href="css/px-tooltip-styles.html"/>
+
+<!--
+Tooltips can be positioned above, below, to the left, or to the right of the target.
+A Smart Orientation option is included that will attempt to automatically choose a placement based on the real estate available – this attempts to prevent the tooltip from going off the screen.
+
+***Note:** tooltips are not recommended for mobile or tablet applications since the hover affordance is inconsistent across devices and platforms (3D touch, tap-and-hold, proximity sensors, etc). See [px-popover](https://www.predix-ui.com/#/components/px-popover/), which is invoked on tap/click instead.
+
+### Usage
+
+    <div id="hoverDivTop" class="hover-tooltip">Hover for tooltip<br/><span>(top, 5 sec delay)</span></div>
+    <px-tooltip
+        for="hoverDivTop"
+        orientation="top"
+        tooltip-message="Top tooltip">
+    </px-tooltip>
+
+### Styling
+The following custom properties are available for styling.
+
+Custom property | Description
+:----------------|:-------------
+`--px-tooltip-text-color` | Text color for the tooltip
+`--px-tooltip-background-color` | Background color for the tooltip
+`--px-tooltip-border-color` | Border color for the tooltip
+`--px-tooltip-shadow-color` | Box shadow color for the tooltip
+`--px-tooltip-max-width` | Max width of the tooltip
+
+@element px-tooltip
+@blurb Tooltip element that provides additional information to users once hovered over the target element for a specified amount of time.
+@homepage index.html
+@demo index.html
+-->
+<dom-module id="px-tooltip">
+  <template>
+    <style include="px-tooltip-styles"></style>
+
+    <div id="tooltip" class$="[[_getClass(visible, _tooltipPos)]]">
+      <div id="message">
+        <span>{{ tooltipMessage }}</span>
+        <slot></slot>
+      </div>
+    </div>
+  </template>
+</dom-module>
+
+<script>
+  Polymer({
+
+    is: 'px-tooltip',
+    behaviors: [
+      Polymer.IronResizableBehavior
+    ],
+
+    /**
+     * Private Properties, used in internal view logic.
+     * @property _values
+     * @type Object
+     */
+    _values: { // attribute values
+      TYPE: {
+        top: 'top',
+        bottom: 'bottom',
+        left: 'left',
+        right: 'right'
+      }
+    },
+    /**
+    * Fired when the tooltip has been shown. Warning: at this point the tooltip has
+    * been moved to <body>, so if not listening directly to the tooltip
+    * you might miss this event.
+    * detail: { target: this}
+    * @event px-tooltip-show
+    */
+    /**
+    * Fired when a request for showing a tooltip has been started, but the tooltip
+    * hasn't shown yet. The tooltip still hasn't been moved to <body>.
+    * The request might be canceled before it is shown
+    * detail: { target: this}
+    * @event px-tooltip-request-show
+    */
+    /**
+    * Fired when a request for hiding the tooltip has been started. At this point the tooltip
+    * has been visually hidden but still is in <body> and hasn't been moved back to where it
+    * belongs in the dom
+    * detail: { target: this}
+    * @event px-tooltip-request-hide
+    */
+    /**
+    * Fired when the tooltip has been moved back from the body to where it belongs in the dom.
+    * The tooltip is still visually hidden.
+    * detail: { target: this}
+    * @event px-tooltip-hide
+    */
+    properties: {
+      /**
+       * Either the id of the element that the tooltip is anchored to or the element itself.
+       *
+       * If an ID is passed, this element must be a sibling of the tooltip.
+       * If an element, location in the dom does not matter.
+       *
+       * (Optional)  If not provided, the px-tooltip will be attached to its parent element.
+       */
+      for: {
+        type: HTMLElement,
+        observer: '_onFor',
+        notify: true,
+        value: ''
+      },
+      /**
+       * The amount of time in miliseconds before the tooltip should appear when the
+       * target element is hovered over.
+       */
+      delay: {
+        type: Number,
+        reflect: true,
+        value: 500
+      },
+      /**
+       * The direction that the tooltip is displayed relative to the
+       * 'for' element.
+       * - 'auto' calculated at render time or resize
+       * - 'left' to the left of the 'for' element
+       * - 'right' to the right of the 'for' element
+       * - 'top' above the 'for' element
+       * - 'bottom' below the 'for' element
+       */
+      orientation: {
+        type: String,
+        value: 'auto'
+      },
+      /**
+       * The string to be displayed in the tooltip message.
+       */
+      tooltipMessage: {
+        type: String,
+        value: ''
+      },
+
+      /**
+      * This boolean can be used to REQUEST an open/close action to the tooltip
+      * Because the show/hide mechanism are asynchronous this won't represent
+      * the actual presence of the tooltip on the screen, this is represented
+      * by the `visible` property
+      */
+      opened: {
+        type: Boolean,
+        value: false,
+        notify: true
+      },
+
+      /**
+        * Whether the tooltip is currently shown on screen
+        *
+        */
+      visible: {
+        type: Boolean,
+        value: false,
+        readOnly: true,
+        notify: true
+      },
+      /**
+        * If true the tooltip will ignore the targets events it usually listens
+        * to: mouseup/down, mouseleave/enter... Use this to more precisely
+        * manually control the showing/hiding of the tooltip
+        */
+      ignoreTargetEvents: {
+        type: Boolean,
+        value: false
+      },
+      /**
+        * True when opened has been requested (i.e set to true) but the tooltip
+        * hasn't been made visible yet. Not needed in most cases but might be
+        * helpful to catch edge states (i.e reclosing the tooltip after a show
+        * request has been issued but the tooltip isn't visible yet)
+        */
+        openRequested: {
+        type: Boolean,
+        value: false,
+        readOnly: true,
+        notify: true
+      },
+      /**
+       * If smartOrientation is turned on then the tooltip will override the
+       * default orientation to try to better fit on the page. Smart Orientation
+       * will be chosen in a clockwise manner. (Example: for a tooltip with
+       * "right" orientation it will be below if tooltip will go off right side
+       * of the screen, but left if it goes off right *and* bottom side of the
+       * screen).
+       * Note: this feature is only enabled for the "top" or "bottom" orientations
+       */
+      smartOrientation: {
+        type: Boolean,
+        value: false
+      },
+      /**
+       * Activates if the user hovers OFF the target element.
+       */
+      _cancel: {
+        type: Boolean,
+        value: false
+      },
+      /**
+       * An object referring to the tooltip's parent element.
+       */
+      _tooltipParent: {
+        type: Object,
+        value: function() {return {};}
+      },
+      followMouse: {
+        type: Boolean,
+        value: false
+      },
+      /**
+       * If using followMouse the mouse coordinates to display the tooltip at, *in viewport pixels*
+       */
+      mouseCoords: {
+        type: Array,
+        value: [-9999, -9999]
+      },
+      _watchDogEnabled: {
+        type: Boolean,
+        value: false
+      },
+      _firstAttached: {
+        type: Boolean,
+        value: true
+      },
+      /**
+       * When shown the tooltip uses a watchdog to ensure it is removed
+       * if the parent is removed. The watchdog runs every watchDogTimeout ms
+       * If you see a performance degradation when showing tooltip you can
+       * increase the watchdog timeout
+       */
+      watchDogTimeout: {
+        type: Number,
+        value: 250
+      },
+      /**
+       * The current target that triggered _show. Useful when target is an array
+       */
+      _currTarget: {
+        type: Object
+      },
+      /**
+       * True when detached is caused by px-tooltip code
+       */
+      _internalDetaching: {
+        type: Boolean,
+        value: false
+      },
+      /**
+       * Used internally for calculations, includes carat + spacing from target (5+5)
+       */
+      _margin: {
+        type: Object,
+        value: function() {
+          return {
+            'top': 10,
+            'bottom': 10,
+            'left': 10,
+            'right': 10
+          }
+        }
+      },
+      /**
+       * Current position of the carat
+       */
+      _tooltipPos: {
+        type: String,
+        value: 'right'
+      }
+    },
+    observers: [
+      '_onMouseMove(mouseCoords.*)',
+      '_openedChanged(opened)',
+      '_ignoreTargetEventsChanged(ignoreTargetEvents)'
+    ],
+    listeners: {
+      'iron-resize': '_onIronResize'
+    },
+    attached: function() {
+
+
+      if(this._firstAttached) {
+
+        this.setAttribute('role','tooltip');
+        // we want to remember where this tooltip was placed originally.
+        this.set('_tooltipParent', this.parentNode);
+        // we want to make sure the target exists-
+        if(this._target){
+          this.listenEvents();
+        }
+        else {
+          //make sure tooltip find its parent if it has no for
+          this._onFor();
+        }
+        this.set('_firstAttached', false);
+      }
+    },
+    detached: function() {
+
+      if(!this._internalDetaching) {
+
+        //"genuine" detach. Ensure we call hide so that everything is reset and
+        //ensuring the tooltip is put back were it should be
+        this.set('opened', false);
+        this.unlistenEvents();
+        this._target = null;
+
+        //ensure we reset the flag so that we start re listening if we re-attach
+        this._firstAttached = true;
+      } else {
+
+        //detached triggered by our show/hide system
+        this._internalDetaching = false;
+        if(!this.openRequested) {
+          this.fire('px-tooltip-hide', {target: this});
+        }
+      }
+    },
+
+    /**
+    * Starts listening to all mouse events (on the target(s)) we are
+    * interested in: mouseenter, mouseup, mouseleave, mousedown
+    */
+    listenEvents: function() {
+      if(this._target && !this.ignoreTargetEvents) {
+        if(Array.isArray(this._target)){
+            for(var i =0; i < this._target.length; i++){
+              this.listen(this._target[i], 'mouseenter', '_setOpenedTrue');
+              this.listen(this._target[i], 'mouseup', '_setOpenedTrue');
+              this.listen(this._target[i], 'mouseleave', '_setOpenedFalse');
+              this.listen(this._target[i], 'mousedown', '_setOpenedFalse');
+            }
+        } else {
+            this.listen(this._target, 'mouseenter', '_setOpenedTrue');
+            this.listen(this._target, 'mouseup', '_setOpenedTrue');
+            this.listen(this._target, 'mouseleave', '_setOpenedFalse');
+            this.listen(this._target, 'mousedown', '_setOpenedFalse');
+        }
+      }
+    },
+
+    /**
+     * Stops listening to all mouse events (on the target(s)) we were interested
+     * in: mouseenter, mouseup, mouseleave, mousedown
+     */
+    unlistenEvents: function() {
+
+      if(this._target) {
+        if(Array.isArray(this._target)){
+          for(var i =0; i < this._target.length; i++){
+            this.unlisten(this._target[i], 'mouseenter', '_setOpenedTrue');
+            this.unlisten(this._target[i], 'mouseup', '_setOpenedTrue');
+            this.unlisten(this._target[i], 'mouseleave', '_setOpenedFalse');
+            this.unlisten(this._target[i], 'mousedown', '_setOpenedFalse');
+          }
+        } else {
+          this.unlisten(this._target, 'mouseenter', '_setOpenedTrue');
+          this.unlisten(this._target, 'mouseup', '_setOpenedTrue');
+          this.unlisten(this._target, 'mouseleave', '_setOpenedFalse');
+          this.unlisten(this._target, 'mousedown', '_setOpenedFalse');
+        }
+      }
+    },
+
+    _setOpenedTrue: function() {
+      this.set('opened', true);
+    },
+
+    _setOpenedFalse: function() {
+      this.set('opened', false);
+    },
+
+    _openedChanged: function() {
+      if(this.opened && (!this.visible || !this.openRequested)) {
+        this._show();
+      }
+
+      if(!this.opened && (this.visible || this.openRequested)) {
+        this._hide();
+      }
+    },
+
+    _onMouseMove: function(){
+
+      if(this.followMouse && this.thisRect && this.visible){
+
+        if(this.orientation === 'auto') {
+
+          //auto positioning
+          this._autoPosition();
+        }
+        else if(this.smartOrientation) {
+
+          //smart positioning
+          this._doPosition(this._findValidSmartOrientation(this.orientation));
+        }
+        else {
+
+          //hard coded positioning
+          this._doPosition(this.orientation);
+        }
+      }
+    },
+    /**
+     * This function fires on a change of the 'for' property,
+     * calls _getTarget and sets the target.
+     */
+    _onFor:function(){
+      this.unlistenEvents()
+
+      this.target = this._getTarget();
+      this._target = this.target;
+
+      this.listenEvents();
+    },
+    /**
+     *  Make sure the tooltip is positioned properly if currently showing.
+     */
+    _onIronResize: function() {
+
+      //we check for watchdogenabled because we know that means
+      //we actually started trying to move the tooltip to the body
+      if(this._watchDogEnabled) {
+        //need that debounce for IE
+        this.debounce('tooltip-resize', function() {
+          if(this.openRequested) {
+            this._processShow();
+          } else if(this.visible) {
+            this.setPosition();
+          }
+        }, 50);
+      }
+    },
+    /**
+     * This function sets the target on the component (the item hovered over)
+     */
+    _getTarget: function() {
+      var ownerRoot = Polymer.dom(this).getOwnerRoot(),
+          parentNode = Polymer.dom(this).parentNode,
+          target;
+
+      if(this.for && typeof(this.for) === 'string') {
+        target = Polymer.dom(parentNode).querySelector('#' + this.for);
+      } else if(this.for && Array.isArray(this.for) && typeof(this.for[0]) === 'string'){
+        target = [];
+        for(var i =0; i < this.for.length; i++){
+          target.push(Polymer.dom(parentNode).querySelector('#' + this.for[i]));
+        }
+      } else if(this.for && typeof(this.for) === 'object') {
+        target = this.for;
+      }
+      //DOCUMENT_FRAGMENT_NODE
+      else if(parentNode.nodeType === 11) {
+          //at this point if we can't find the acual owner root
+          //we're probably not attached yet. Just set it to null
+          //and wait for 'this' to be attached and rerun this function
+          target = ownerRoot ? ownerRoot.host : null;
+      }
+      else {
+        target = parentNode;
+      }
+      return target;
+    },
+    /**
+     * This function sets a timeout with the delay value, and if
+     * this.cancel has not been called, moves the tooltip to the DOM root,
+     * and sets the tooltip as visible.
+     * Don't call this manually but set `opened` instead
+     */
+    _show: function(evt) {
+      var _this = this,
+          currTarget = Polymer.dom(evt).rootTarget;
+      //we start out with _cancel being false, but if at any time during the timeout it's set to true, we cancel the whole thing.
+      this.set('_cancel',false);
+      //readonly prop
+      this._setOpenRequested(true);
+
+      setTimeout(function() {
+        if(this._cancel === true) {
+          return false;
+        }
+
+        //fallback on target if needed
+        currTarget = currTarget ? currTarget : (this.target.length ? this.target[0] : this.target);
+        this.set('_currTarget', currTarget);
+
+        this._watchDogEnabled = true;
+        //make sure it's valid to show
+        if(this._watchDog()) {
+
+          // now that we are all set, we move the tooltip to the dom root, where the absolute positioning works everytime,
+          // and we don't have to worry about overflows, the scourge of css.
+          this._internalDetaching = true;
+
+          this.fire('px-tooltip-request-show', { target: this});
+          //this will trigger first iron resize (timed out), then attached and then _processShow
+          document.body.appendChild(this);
+        }
+
+      }.bind(this), this.delay);
+    },
+    _processShow: function() {
+
+      if(this._cancel) {
+        return;
+      }
+
+      //readonly prop
+      this._setVisible(true);
+      this.setPosition();
+
+      this.fire('px-tooltip-show', {
+        target: this
+      });
+      //readonly prop
+      this._setOpenRequested(false);
+    },
+    /**
+     * Hide the tooltip, clear the timer, and move the tooltip back to whence
+     * it came.
+     * Don't call this manually but set `opened` instead
+     */
+    _hide: function() {
+
+      // // hide this thing
+      this.set('_cancel',true);
+      if (this.visible || this.openRequested) {
+        this._watchDogEnabled = false;
+        //readonly prop
+        this._setOpenRequested(false);
+
+        //and we move the tooltip back to whence it came.
+        //readonly prop
+        this._setVisible(false);
+
+        this.fire('px-tooltip-request-hide', {target: this});
+        if(this._tooltipParent && this._tooltipParent.appendChild) {
+          this._internalDetaching = true;
+          this._tooltipParent.appendChild(this);
+
+        } else {
+          //something went wrong, we don't have a parent anymore. remove ourselves
+          //stupid IE can't remove
+          if(this.remove) {
+            this.remove();
+          } else {
+            //readonly prop
+            this._setVisible('visible');
+          }
+        }
+      }
+    },
+    /**
+     * This function calls the appropriate positioning function,
+     * according to the orientation specified, target and tooltip content
+     */
+    setPosition: function() {
+      if(!this._target) {
+        return;
+      }
+
+      // using this method so that we can calculate the best position
+      // in the _positionXXX methods without having to do recursion, plus
+      // avoiding issues when in tables in IE and inside scroll panes
+      this.targetRect = this.followMouse ? this.getBoundingClientRect() : this._target.getBoundingClientRect();
+      this.thisRect = this.followMouse ? this.targetRect : this.getBoundingClientRect();
+
+      if(this.orientation === 'auto') {
+
+        //auto positioning
+        this._autoPosition();
+      }
+      else if(this.smartOrientation) {
+
+        //smart positioning
+        this._doPosition(this._findValidSmartOrientation(this.orientation));
+      }
+      else {
+
+        //hard coded positioning
+        this._doPosition(this.orientation);
+      }
+    },
+    /**
+    * @method _autoPosition
+    * This function is called as the default positioning
+    * in setPosition
+    *
+    */
+    _autoPosition: function() {
+      // smart position to right automatically for now
+
+      this._doPosition(this._findValidSmartOrientation(this._values.TYPE.right));
+    },
+    /**
+    * This function checks if the tooltip can be fitted on the left.
+    */
+    _fitOnLeft: function() {
+
+      //make sure carat is styled properly.
+    //  this._styleTheCaratAs(this._values.TYPE.left);
+
+      var mostLeft,
+          mostTop,
+          mostLow,
+          startX = this.followMouse ? (this.mouseCoords[0] - window.pageXOffset) : this.targetRect.left,
+          startY = this.followMouse ? (this.mouseCoords[1] - window.pageYOffset) : (this.targetRect.top + this.targetRect.height/2);
+
+        //we need to check if we fit on the left, but top and below as well
+      mostLeft = startX - this.thisRect.width - 5;
+      mostTop = startY - this.thisRect.height/2;
+      mostLow = startY + this.thisRect.height/2;
+
+      return mostLeft > 0 && mostTop > 0 && mostLow < window.innerHeight;
+    },
+    /**
+    * This function checks if the tooltip can be fitted on the right.
+    */
+    _fitOnRight: function() {
+
+      //make sure carat is styled properly.
+      //this._styleTheCaratAs(this._values.TYPE.right);
+
+      var mostLeft,
+        mostTop,
+        mostLow,
+        startX = this.followMouse ? (this.mouseCoords[0] - window.pageXOffset) : this.targetRect.right,
+        startY = this.followMouse ? (this.mouseCoords[1] - window.pageYOffset) : (this.targetRect.top + this.targetRect.height/2);
+
+      //we need to check if we fit on the left, but top and below as well
+      var mostRight = startX + this.thisRect.width + 5;
+      var mostTop = startY - this.thisRect.height/2;
+      var mostLow = startY + this.thisRect.height/2;
+
+      return mostRight < window.innerWidth && mostTop > 0 && mostLow < window.innerHeight;
+    },
+    /**
+    * This function checks if the tooltip can be fitted on top.
+    */
+    _fitOnTop: function() {
+
+      //make sure carat is styled properly.
+      //this._styleTheCaratAs(this._values.TYPE.top);
+
+      var mostHigh,
+        mostRight,
+        mostLeft,
+        startX = this.followMouse ? (this.mouseCoords[0] - window.pageXOffset) : (this.targetRect.left + this.targetRect.width/2),
+        startY = this.followMouse ? (this.mouseCoords[1] - window.pageYOffset) : this.targetRect.top;
+
+      //we need to check if we fit above, but left or right as well
+      var mostHigh = startY - this.thisRect.height- 5;
+      var mostRight = startX + this.thisRect.width/2;
+      var mostLeft = startX - this.thisRect.width/2;
+
+      return mostHigh > 0 && mostRight < window.innerWidth && mostLeft > 0;
+    },
+    /**
+    * This function checks if the tooltip can be fitted below.
+    */
+    _fitBelow: function() {
+
+      //make sure carat is styled properly.
+    //  this._styleTheCaratAs(this._values.TYPE.bottom);
+
+      var mostHigh,
+        mostRight,
+        mostLeft,
+        startX = this.followMouse ? (this.mouseCoords[0] - window.pageXOffset) : (this.targetRect.left + this.targetRect.width/2),
+        startY = this.followMouse ? (this.mouseCoords[1] - window.pageYOffset) : this.targetRect.bottom;
+
+      //we need to check if we fit below, but left or right as well
+      var mostLow = startY + this.thisRect.height + 5
+      var mostRight = startX + this.thisRect.width/2;
+      var mostLeft = startX - this.thisRect.width/2;
+
+      return mostLow < window.innerHeight && mostRight < window.innerWidth && mostLeft > 0;
+    },
+    /**
+    * This function tries the find the appropriate orientation for the current
+    * tooltip and orientation passed. it will try every orientation clockwise
+    * until it finds one that fits, and return the startingOrientation if none fit.
+    */
+    _findValidSmartOrientation: function(startingOrientation) {
+      var orientationList = [this._values.TYPE.left,
+        this._values.TYPE.top,
+        this._values.TYPE.right,
+        this._values.TYPE.bottom],
+        i = 0,
+        index;
+
+      //find starting index within the orientation listen
+      switch(startingOrientation) {
+        case this._values.TYPE.left:
+          index = 0;
+          break;
+        case this._values.TYPE.top:
+          index = 1;
+          break;
+        case this._values.TYPE.right:
+          index = 2;
+          break;
+        case this._values.TYPE.bottom:
+          index = 3;
+          break;
+      }
+
+      for(i = 0; i < 4; i++) {
+        if(this._orientationFit(orientationList[index])) {
+
+          //we found the first orientation that fit, return it
+          return orientationList[index];
+        }
+
+        //keep searching. Make sure we loop through the array by resetting the
+        //index if we go too far
+        index = (index + 1) % 4;
+      }
+
+      return startingOrientation;
+    },
+    /**
+    * This function checks if the tooltip will fit for the given orientation.
+    */
+    _orientationFit: function(orientation) {
+      switch(orientation) {
+        case this._values.TYPE.right:
+          return this._fitOnRight();
+          break;
+        case this._values.TYPE.left:
+          return this._fitOnLeft();
+          break;
+        case this._values.TYPE.top:
+          return this._fitOnTop();
+          break;
+        case this._values.TYPE.bottom:
+          return this._fitBelow();
+          break;
+      }
+    },
+    /**
+    * This function positions the tooltip on left/right/top/bottom irrespective
+    * of everything else, i.e smart orientation.
+    */
+    _doPosition: function(orientation) {
+      switch(orientation) {
+        case this._values.TYPE.right:
+          this._positionRight();
+          break;
+        case this._values.TYPE.left:
+          this._positionLeft();
+          break;
+        case this._values.TYPE.top:
+          this._positionTop();
+          break;
+        case this._values.TYPE.bottom:
+          this._positionBottom();
+          break;
+      }
+    },
+    /**
+    * This function sets the carat and tooltip position on top.
+    */
+    _positionTop: function() {
+
+      this.set('_tooltipPos', 'top');
+
+      if(this.followMouse){
+        this.style.left = this.mouseCoords[0] - (this.thisRect.width / 2) + 'px'
+        this.style.top = this.mouseCoords[1] - this.thisRect.height - this._margin.top + 'px';
+
+      } else {
+        // position the tooltip itself
+        this.style.left = this._getTargetPositionCenterOfLeftRight() - (this.thisRect.width / 2) + 'px';
+        this.style.top = this._getTargetPositionTop() - this.thisRect.height - this._margin.top + 'px';
+      }
+    },
+    /**
+    * This function sets the carat and tooltip position on bottom.
+    */
+    _positionBottom: function() {
+
+      this.set('_tooltipPos', 'bottom');
+
+      if(this.followMouse){
+        this.style.left = this.mouseCoords[0] - (this.thisRect.width / 2) + 'px'
+        this.style.top = this.mouseCoords[1] + this._margin.bottom + 'px';
+      } else {
+        // position the tooltip itself
+        this.style.left = this._getTargetPositionCenterOfLeftRight() - (this.thisRect.width / 2) + 'px';
+        this.style.top = this._getTargetPositionBottom() + this._margin.bottom + 'px';
+      }
+    },
+    /**
+    * This function sets the carat and tooltip position on left.
+    */
+    _positionLeft: function() {
+      var top;
+
+      this.set('_tooltipPos', 'left');
+
+      if(this.followMouse){
+        this.style.left = this.mouseCoords[0] - this.thisRect.width - this._margin.top + 'px';
+        this.style.top = this.mouseCoords[1]  - (this.thisRect.height / 2) + 'px';
+
+      } else {
+        top = Math.round(this._getTargetPositionCenterOfTopBottom() - (this.thisRect.height / 2)) + 'px';
+
+        // position the tooltip itself
+        this.style.left = this._getTargetPositionLeft() - this.thisRect.width - this._margin.left + 'px';
+        this.style.top = top;
+      }
+    },
+    /**
+    * This function sets the carat and tooltip position on right.
+    */
+    _positionRight: function() {
+      var top;
+
+      this.set('_tooltipPos', 'right');
+
+      if(this.followMouse){
+        this.style.left = this.mouseCoords[0] + 10 + 'px';
+        this.style.top = this.mouseCoords[1]  - (this.thisRect.height / 2) + 'px';
+
+      } else {
+        top = Math.round(this._getTargetPositionCenterOfTopBottom() - (this.thisRect.height / 2)) + 'px';
+
+        // position the tooltip itself
+        this.style.left = this._getTargetPositionRight() + this._margin.left + 'px';
+        this.style.top = top;
+      }
+    },
+
+    /**
+    * This function returns the target position on top
+    */
+    _getTargetPositionTop: function() {
+      return this._getTargetPosition("top", "pageYOffset"); // use pageYOffset & pageXOffset, scrollX and scrollY undefined in IE
+    },
+    /**
+    * This function returns the target position on bottom
+    */
+    _getTargetPositionBottom: function() {
+      return this._getTargetPositionTop() + this.targetRect.height;
+    },
+    /**
+    * This function returns the target position on left
+    */
+    _getTargetPositionLeft: function(smartOrientation) {
+      return this._getTargetPosition("left", "pageXOffset");
+    },
+    /**
+    * This function returns the target position on right
+    */
+    _getTargetPositionRight: function() {
+      return this._getTargetPositionLeft() + this.targetRect.width;
+    },
+    /**
+    * This function returns the target position on the center of
+    * either the top or bottom.
+    */
+    _getTargetPositionCenterOfTopBottom: function() {
+      return   this._getTargetPositionTop() + (this.targetRect.height / 2);
+    },
+    /**
+    * This function returns the target position on the center of
+    * either the left or right.
+    */
+    _getTargetPositionCenterOfLeftRight: function(smartOrientation) {
+      return this._getTargetPositionLeft() + (this.targetRect.width / 2);
+    },
+    /**
+    * This function calculates the target position, with passed
+    * parameters
+    */
+    _getTargetPosition: function(topOrLeft, pageXOrYOffset) {
+      var position = this.targetRect[topOrLeft]; // use the targetRect (which uses bounding box) initially
+      position += window[pageXOrYOffset]; // factor in any window scrolling we've done
+      return position;
+    },
+
+    _isWithinDom: function(node) {
+      var current = node,
+          search = true;
+
+      while(current && current.nodeName !== 'BODY') {
+
+        //shadow root
+        if(current.nodeType === 11) {
+          current = current.host;
+        } else {
+          current = current.parentNode;
+        }
+      }
+
+      return !!current;
+    },
+    /**
+     * Watchdog when the tooltip is showing so it can be removed
+     * if the parent is removed. Returns false when the tooltip is removed.
+     */
+    _watchDog: function() {
+
+      //try to figure out if target is still in the document
+      if(!this._isWithinDom(this._currTarget)) {
+        this._watchDogEnabled = false;
+
+        //IE can't remove
+        if(this.remove) {
+          this.remove();
+        } else {
+          this.set('opened', false);
+        }
+
+        //if target is an array make sure we remove it from the array
+        if(this.target.length) {
+          this.target.remove(this._currTarget);
+        }
+
+        return false;
+      } else if(this._watchDogEnabled) {
+        setTimeout(function () {
+          this._watchDog();
+        }.bind(this), this.watchDogTimeout);
+      }
+      return true;
+    },
+
+    _getClass: function() {
+      var res = 'tooltip-container ';
+
+      if(!this.visible) {
+        res += ' hidden ';
+      }
+
+      //style the arrow
+      res += this._tooltipPos;
+      return res;
+    },
+
+    _ignoreTargetEventsChanged: function() {
+
+      //make sure the handlers are removed
+      if(this.ignoreTargetEvents) {
+        this.unlistenEvents();
+      } else {
+        this.listenEvents();
+      }
+    }
+  });
+</script>

@@ -1,0 +1,42 @@
+<!doctype html>
+
+<html>
+    <head>
+        <meta charset="utf-8">
+        <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+        <link rel="icon" href="/favicon.ico" type="image/x-icon">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>px-simple-horizontal-bar-chart Demo</title>
+        <!-- Requires Webcomponents.js polyfill is provided by the page for browsers that don't support html imports -->
+        <script src="../webcomponentsjs/webcomponents-lite.min.js"></script>
+        <!-- Import custom element. Note: see comment about relative paths to dependencies in the *.html file referenced below -->
+        <link rel="import" href="px-simple-horizontal-bar-chart.html"/>
+        <style>
+            #container {
+                height: 350px;
+            }
+        </style>
+    </head>
+
+    <body>
+
+        <template id="just-for-demo" is="dom-bind">
+            <div id="container">
+                <px-simple-horizontal-bar-chart
+                    id="default-chart"
+                    width="auto"
+                    height="auto"
+                    chart-data="[100,200,300,400,500]"
+                    colors='["#123453","#234784","#345453","#467564","#578785"]'
+                    domain-max="300"
+                    legend-labels='[
+                        "No Action", "Scheduled Maintenance", "Sensor Repair",
+                        "Unplanned Maintenance", "Ops Changes", "Forced Outage", "eight"
+                    ]'>
+                    &hearts;
+                </px-simple-horizontal-bar-chart>
+            </div>
+        </template>
+
+    </body>
+</html>

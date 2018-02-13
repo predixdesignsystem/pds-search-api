@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>px-dropdown simple demo</title>
+  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+  <link rel="import" href="../../polymer/polymer.html" />
+  <link rel="import" href="../px-tooltip.html" />
+
+  <style>
+    html,
+    body {
+      margin: 0;
+      font-size: 15px;
+      font-family: 'GE Inspira Sans';
+    }
+  </style>
+</head>
+<body>
+  <dom-bind>
+    <template is="dom-bind">
+      <!-- HTML element -->
+      <div>
+        <div style="margin: 50px">
+          <px-tooltip
+            id="tt"
+            delay="50"
+            tooltip-message="This is a tooltip"
+            orientation="auto">
+            <p>
+              so much bof
+            </p>
+            <p>
+              so much bof
+            </p>
+            <p>
+              so much bof
+            </p>
+          </px-tooltip>
+          <button id="moo">htmlElement</button>
+        </div>
+      </div>
+
+      <!-- ID -->
+      <div>
+        <div style="margin: 50px">
+          <px-tooltip
+            delay="50"
+            tooltip-message="This is a tooltip2"
+            orientation="auto"
+            for="randd">
+            <p>
+              so much bof2
+            </p>
+            <p>
+              so much bof2
+            </p>
+            <p>
+              so much bof2
+            </p>
+          </px-tooltip>
+          <button id="randd">single ID</button>
+        </div>
+      </div>
+
+
+    </template>
+  </dom-bind>
+  <script>
+    window.addEventListener('WebComponentsReady', evt => {
+      let moo = document.getElementById('tt');
+
+      moo.set('for', Polymer.dom(document).querySelector('#moo'));
+    });
+  </script>
+</body>

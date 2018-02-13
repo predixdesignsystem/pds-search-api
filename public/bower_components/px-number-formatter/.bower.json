@@ -1,0 +1,62 @@
+{
+  "name": "px-number-formatter",
+  "version": "4.1.1",
+  "main": [
+    "px-number-formatter.html"
+  ],
+  "ignore": [
+    "*.enc",
+    ".*",
+    "npm-debug.log",
+    "gulpfile.js",
+    "sass",
+    "bower_components",
+    "node_modules",
+    "test",
+    "OSS_Notice.pdf",
+    "scripts",
+    ".github",
+    "px-number-formatter.png",
+    "LICENSE.md",
+    "CONTRIBUTING.md",
+    "HISTORY.md",
+    "README.md",
+    ".jshintrc",
+    ".editorconfig"
+  ],
+  "dependencies": {
+    "polymer": "#1.9 - 2",
+    "numbro": "~1.9.0"
+  },
+  "devDependencies": {
+    "px-theme": "^3.0.0",
+    "px-demo": "^3.0.0",
+    "web-component-tester": "^6.0.0"
+  },
+  "resolutions": {
+    "webcomponentsjs": "^1.0.0"
+  },
+  "variants": {
+    "1.x": {
+      "dependencies": {
+        "polymer": "^1.9.0"
+      },
+      "devDependencies": {
+        "web-component-tester": "^5.0.0"
+      },
+      "resolutions": {
+        "webcomponentsjs": "^0.7.24"
+      }
+    }
+  },
+  "homepage": "https://github.com/PredixDev/px-number-formatter",
+  "_release": "4.1.1",
+  "_resolution": {
+    "type": "version",
+    "tag": "v4.1.1",
+    "commit": "ed70858daf49eb9cca4bec30b520248b8b2da16c"
+  },
+  "_source": "https://github.com/PredixDev/px-number-formatter.git",
+  "_target": "^4.1.0",
+  "_originalSource": "px-number-formatter"
+}

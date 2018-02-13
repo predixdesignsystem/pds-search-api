@@ -1,0 +1,53 @@
+{
+  "name": "px-icon-set",
+  "version": "2.1.4",
+  "description": "Polymer component to allow easy use of Predix icons",
+  "main": "px-icon-set.html",
+  "ignore": [
+    "*.enc",
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "sass",
+    "*.md",
+    "scripts",
+    ".github",
+    "gulpfile.js",
+    "wct.conf.json",
+    "test",
+    "OSS_Notice.pdf",
+    "*.png",
+    "npm-debug.log",
+    "icons",
+    "examples"
+  ],
+  "dependencies": {
+    "polymer": "#1.9 - 2",
+    "iron-iconset-svg": "^2.0.0",
+    "iron-icon": "^2.0.0",
+    "iron-flex-layout": "^2.0.0"
+  },
+  "devDependencies": {
+    "px-theme": "^3.0.0",
+    "px-code-design": "^2.0.0",
+    "px-toggle-design": "^2.0.0",
+    "web-component-tester": "^6.3.0",
+    "px-demo": "^3.0.0"
+  },
+  "resolutions": {
+    "webcomponentsjs": "^1.0.0"
+  },
+  "variants": {
+    "1.x": {
+      "dependencies": {
+        "polymer": "^1.9.0"
+      },
+      "devDependencies": {
+        "web-component-tester": "^5.0.0"
+      },
+      "resolutions": {
+        "webcomponentsjs": "^0.7.0"
+      }
+    }
+  }
+}

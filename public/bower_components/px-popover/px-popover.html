@@ -1,0 +1,297 @@
+<link rel="import" href="../polymer/polymer.html"/>
+<link rel="import" href="../iron-dropdown/iron-dropdown.html"/>
+<link rel="import" href="css/px-popover-styles.html"/>
+
+<!--
+Simply place the the px-popover next to the element that you want it to attach to.
+Set the `for` attribute to the `id` of the element that it's associated with. Then set
+the `popover-title` and `popover-body` properties, or pass HTML
+content as a child of the px-popover. The popover will automatically grow
+to encapsulate the contents that you have established, but you are responsible for styling
+of the content inside of a rich popover.
+
+### Usage
+
+    <button id="someElement">Some element</button>
+    <px-popover for="someElement"
+                orientation="bottom"
+                popover-title="Bottom Popover"
+                popover-body="Lorem ipsum">
+    </px-popover>
+
+Passing rich HTML content:
+
+    <button id="someElement">Some element</button>
+    <px-popover for="someElement" orientation="bottom">
+      <form><label>This is a form<input class='text-input' type='text' value='Input'/></label></form>
+    </px-popover>
+
+### Styling
+
+The following custom properties are available for styling:
+
+Custom property | Description
+:----------------|:-------------
+`--px-popover-background-color` | Background color for the popover
+`--px-popover-border-color` | Border color for the popover
+`--px-popover-text-color` | Color for the text
+`--px-popover-max-width` | Maximum width of the popover
+
+@element px-popover
+@homepage index.html
+@demo index.html
+-->
+<dom-module id="px-popover">
+    <template>
+      <style include="px-popover-styles"></style>
+
+      <iron-dropdown
+        id="dropdown"
+        opened="{{_isShowing}}"
+        with-backdrop="[[showOverlay]]"
+        scroll-action="[[scrollAction]]"
+        position-target="[[_target]]"
+        sizing-target="[[_popover]]"
+        dynamic-align="[[_isAuto(orientation)]]">
+        <div id="popover" class$="{{orientation}}" slot="dropdown-content">
+          <template is="dom-if" if="{{popoverTitle}}">
+            <h5 class="epsilon">{{popoverTitle}}</h5>
+          </template>
+          <template is="dom-if" if="{{popoverBody}}">
+            <p>{{popoverBody}}</p>
+          </template>
+          <template is="dom-if" if="{{enhanced}}">
+            <slot></slot>
+          </template>
+        </div>
+      </iron-dropdown>
+
+    </template>
+</dom-module>
+
+<script>
+  Polymer({
+
+    is: 'px-popover',
+
+    observers: [
+      '_setPosition(orientation, _target)'
+    ],
+
+    properties: {
+      /**
+        * The id of the element that the tooltip is anchored to. This element
+        * must be a sibling of the tooltip.
+        */
+      for: {
+        type: String,
+        reflect: true,
+        observer: '_forChanged'
+      },
+      /**
+        * The direction that the popover is displayed relative to the
+        * `for` element.
+        * - `left` - to the left of the 'for' element
+        * - `right` - to the right of the 'for' element
+        * - `top` - above the 'for' element
+        * - `bottom` - below the 'for' element
+        * - `auto` - will be placed wherever there is space available
+        */
+      orientation: {
+        type: String,
+        reflect: true,
+        value: 'right'
+      },
+      /**
+        * The title that will be displayed in the popover.
+        */
+      popoverTitle: {
+        type: String,
+        reflect: true,
+        value: ''
+      },
+      /**
+        * The body text that will be displayed in the popover. Note: Does not support HTML elements within the body. Set `enhanced` and pass HTML as a child of the px-popover instead.
+        */
+      popoverBody: {
+        type: String,
+        reflect: true,
+        value: ''
+      },
+      /**
+        * Deprecated: this property is not actually used by the component anymore, but is retained for backward compatibility.
+        */
+        position: {
+        type:String,
+        value:""
+      },
+      /**
+        * By default, the overlay covering the rest of the screen is off.
+        * This property should be set for mobile applications.
+        */
+      showOverlay: {
+        type: Boolean,
+        value: false
+      },
+      /**
+        * Enhanced empowers the developer to fully control the inner HTML of the popover. For instance, the popover can be used to render a form or contain an embedded video.
+        * To inject your custom HTML, simply include your custom markup as the first child of the px-popover when declaring the px-popover in your application. Sample provided below.
+        *
+        *     <px-popover for="someElement" enhanced>
+        *         <form>
+        *            <label>This is a form
+        *              <input type='text'/>
+        *            </label>
+        *         </form>
+        *     </px-popover>
+        */
+        enhanced: {
+        type: Boolean,
+        value: false
+      },
+      /**
+        * Determines behavior of the popover when scrolling occurs outside:
+        * - `lock` - scrolling is disabled until popover is dismissed
+        * - `cancel` - scrolling dismisses the popover
+        */
+      scrollAction: {
+        type: String,
+        value: 'lock'
+      },
+      /**
+        * Whether the popover is currently shown.
+        */
+      _isShowing: {
+        type: Boolean,
+        value: false
+      },
+      /**
+      * Reference to the trigger element.
+      */
+      _target: {
+        type: HTMLElement
+      }
+    },
+    _getTarget: function() {
+      var ownerRoot = Polymer.dom(this).getOwnerRoot(),
+          parentNode = Polymer.dom(this).parentNode,
+          target;
+
+      if(this.for && typeof(this.for) === 'string') {
+        target = Polymer.dom(parentNode).querySelector('#' + this.for);
+      }
+      else if(this.for && typeof(this.for) === 'object') {
+        target = this.for;
+      }
+      //DOCUMENT_FRAGMENT_NODE
+      else if(parentNode.nodeType === 11) {
+        //at this point if we can't find the actual owner root
+        //we're probably not attached yet. Just set it to null
+        //and wait for 'this' to be attached and rerun this function
+        target = ownerRoot ? ownerRoot.host : null;
+      }
+      else {
+        target = parentNode;
+      }
+      return target;
+    },
+    _forChanged: function() {
+      if(this._target) {
+        this.unlisten(this._target, 'tap', '_toggle');
+      }
+      this._target = this._getTarget();
+      if(this._target) {
+        this.listen(this._target, 'tap', '_toggle');
+      }
+    },
+    /**
+      * Sets up listeners when popover is created
+      */
+    attached: function () {
+      //search for target
+      this._forChanged();
+    },
+    _isDescendant: function (parent, child) {
+    var node = child.parentNode;
+      while (node != null) {
+        if (node === parent) {
+          return true;
+        }
+        node = node.parentNode;
+      }
+      return false;
+    },
+    /**
+      * Determines if event should yield a change in the popover visibility
+      */
+    _toggle: function (event) {
+      if(this._isShowing) {
+        this.hide();
+      } else {
+        this.show();
+      }
+    },
+    /**
+      * Displays the popover
+      */
+    show: function () {
+      this.$.dropdown.open();
+      /**
+      * @event px-popover-show
+      *
+      * Event fired when the px-popover is shown.
+      * `event.detail.target` contains a reference to the px-popover element.
+      */
+      this.fire('px-popover-show', {
+        target: this
+      });
+    },
+    /**
+      * Hides the popover
+      */
+    hide: function () {
+      this.$.dropdown.close();
+      /**
+      * @event px-popover-hide
+      *
+      * Event fired when the px-popover is hidden.
+      * `event.detail.target` contains a reference to the px-popover element.
+      */
+      this.fire('px-popover-hide', {
+        target: this
+      });
+    },
+    _setPosition: function(orientation, target) {
+      if(orientation === undefined || target === undefined) return;
+      window.setTimeout(function() {
+        if(orientation === 'right') {
+          this.$.dropdown.verticalAlign = 'middle';
+          this.$.dropdown.verticalOffset = 0;
+          this.$.dropdown.horizontalAlign = 'left';
+          this.$.dropdown.horizontalOffset = parseFloat(window.getComputedStyle(target).width) + 10;
+        }
+        else if(orientation === 'left') {
+          this.$.dropdown.verticalAlign = 'middle';
+          this.$.dropdown.verticalOffset = 0;
+          this.$.dropdown.horizontalAlign = 'right';
+          this.$.dropdown.horizontalOffset = parseFloat(window.getComputedStyle(target).width) + 10;
+        }
+        else if(orientation === 'top') {
+          this.$.dropdown.verticalAlign = 'bottom';
+          this.$.dropdown.verticalOffset = parseFloat(window.getComputedStyle(target).height) + 10;
+          this.$.dropdown.horizontalAlign = 'center';
+          this.$.dropdown.horizontalOffset = 0;
+        }
+        else if(orientation === 'bottom') {
+          this.$.dropdown.verticalAlign = 'top';
+          this.$.dropdown.verticalOffset = parseFloat(window.getComputedStyle(target).height) + 10;
+          this.$.dropdown.horizontalAlign = 'center';
+          this.$.dropdown.horizontalOffset = 0;
+        }
+      }.bind(this),5);
+    },
+    _isAuto: function(orientation) {
+      return orientation === 'auto';
+    }
+  });
+</script>

@@ -1,0 +1,48 @@
+<link rel="import" href="../px-vis/px-vis-behavior-colors.html" />
+
+<script>
+var PxSimpleChartCommonBehavior = PxSimpleChartCommonBehavior || {};
+
+/*
+  Name:
+  PxSimpleChartCommonBehavior.colors
+
+  Description:
+  Assists in getting theme colors and applying them to the visualization element.
+
+  Dependencies:
+  - px-colors-design
+
+  @polymerBehavior PxSimpleChartCommonBehavior.colors
+*/
+PxSimpleChartCommonBehavior.colors = [{
+  /**
+   * Returns the correct color for a particular index.
+   *
+   * @private
+   * @method _getDataVisColor
+   * @param {Number} index - The index of the color to retrieve
+   * @return {String} - The found color in RGB format
+   */
+  _getDataVisColor: function(index) {
+    var length = this.seriesColorList.length,
+        i = this._calcIndex(index, length);
+    return this.seriesColorList[i];
+  },
+
+  /**
+   * Calculates the index. When we run out of indices, it loops back over
+   * valid indices.
+   *
+   * @private
+   * @method _calcIndex
+   * @param {Number} i - Current index
+   * @param {Number} l - Total length to search
+   * @return {Number}
+   */
+  _calcIndex: function(i,l) {
+    return i < l ? i : this._calcIndex(i - l, l);
+  }
+}, PxColorsBehavior.dataVisColorTheming];
+
+</script>
