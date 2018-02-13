@@ -232,21 +232,23 @@ const pathToSectionTitle = path => {
  *
  */
 exports.stats10d = functions.https.onRequest((req, res) => {
-  const ref = admin.database().ref('/view');
-  const milliTenDaysAgo = Date.now() - daysToMilli(10);
-  const milliOneDayAgo = Date.now() - hoursToMilli(24);
-  ref.orderByChild('_createdAt').startAt(milliTenDaysAgo).once('value', snapshot => {
-    const views = toValues(snapshot.val());
-    const topViews = reduceByVal(views, 'name');
-    const topSections = reduceByVal(
-      views.map(v => Object.assign({}, v, { section: pathToSectionTitle(v.path) })), 'section'
-    );
-    const views24h = views.filter(v => v._createdAt > milliOneDayAgo);
-    res.json({
-      "totalViews10d" : views.length,
-      "topPages10d" : topViews.slice(0,25),
-      "topSections10d" : topSections,
-      "totalViews24h" : views24h.length
+  cors(req, res, () => {
+    const ref = admin.database().ref('/view');
+    const milliTenDaysAgo = Date.now() - daysToMilli(10);
+    const milliOneDayAgo = Date.now() - hoursToMilli(24);
+    ref.orderByChild('_createdAt').startAt(milliTenDaysAgo).once('value', snapshot => {
+      const views = toValues(snapshot.val());
+      const topViews = reduceByVal(views, 'name');
+      const topSections = reduceByVal(
+        views.map(v => Object.assign({}, v, { section: pathToSectionTitle(v.path) })), 'section'
+      );
+      const views24h = views.filter(v => v._createdAt > milliOneDayAgo);
+      res.json({
+        "totalViews10d" : views.length,
+        "topPages10d" : topViews.slice(0,25),
+        "topSections10d" : topSections,
+        "totalViews24h" : views24h.length
+      });
     });
   });
 });
