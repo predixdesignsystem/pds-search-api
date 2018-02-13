@@ -30,11 +30,11 @@
     @property({ type: Array })
     views: Result[] = [];
 
-    @property({ type: String })
-    views10d: string = 'XXXX';
+    @property({ type: Number })
+    views10d: number = 0;
 
-    @property({ type: String })
-    views24h: string = 'XXXX';
+    @property({ type: Number })
+    views24h: number = 0;
 
     @property({ type: Array })
     topPages: StatsPage[];
@@ -58,6 +58,8 @@
         this.searches = [{label, value, created, detail, type, animal}, ...this.searches];
       });
 
+      let statsInitialized = false;
+
       /* Listen for new view events and add them to the page */
       const viewRef = firebase.database().ref('/view').limitToLast(50);
       viewRef.on('child_added', data => {
@@ -67,16 +69,21 @@
         const created = child._createdAt;
         const animal = gaToAnonAnimal(child._ga);
         this.views = [{label, value, created, animal}, ...this.views];
+        if (statsInitialized) {
+          this.views10d++;
+          this.views24h++;
+        }
       });
 
       /* Fetch stats for the last 10 days */
       fetch('https://us-central1-pds-search-api.cloudfunctions.net/stats10d')
         .then(response => response.json())
         .then((data: StatsResponse) => {
-          this.views10d = data.totalViews10d + '';
-          this.views24h = data.totalViews24h + '';
+          this.views10d = this.views10d + data.totalViews10d;
+          this.views24h = this.views24h + data.totalViews24h;
           this.topPages = data.topPages10d;
           this.topSections = data.topSections10d;
+          statsInitialized = true;
           console.log(data);
         });
     }

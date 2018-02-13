@@ -17,8 +17,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
             super(...arguments);
             this.searches = [];
             this.views = [];
-            this.views10d = 'XXXX';
-            this.views24h = 'XXXX';
+            this.views10d = 0;
+            this.views24h = 0;
         }
         connectedCallback() {
             super.connectedCallback();
@@ -34,6 +34,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
                 const animal = gaToAnonAnimal(child._ga);
                 this.searches = [{ label, value, created, detail, type, animal }, ...this.searches];
             });
+            let statsInitialized = false;
             /* Listen for new view events and add them to the page */
             const viewRef = firebase.database().ref('/view').limitToLast(50);
             viewRef.on('child_added', data => {
@@ -43,15 +44,20 @@ var __metadata = (this && this.__metadata) || function (k, v) {
                 const created = child._createdAt;
                 const animal = gaToAnonAnimal(child._ga);
                 this.views = [{ label, value, created, animal }, ...this.views];
+                if (statsInitialized) {
+                    this.views10d++;
+                    this.views24h++;
+                }
             });
             /* Fetch stats for the last 10 days */
             fetch('https://us-central1-pds-search-api.cloudfunctions.net/stats10d')
                 .then(response => response.json())
                 .then((data) => {
-                this.views10d = data.totalViews10d + '';
-                this.views24h = data.totalViews24h + '';
+                this.views10d = this.views10d + data.totalViews10d;
+                this.views24h = this.views24h + data.totalViews24h;
                 this.topPages = data.topPages10d;
                 this.topSections = data.topSections10d;
+                statsInitialized = true;
                 console.log(data);
             });
         }
@@ -74,12 +80,12 @@ var __metadata = (this && this.__metadata) || function (k, v) {
         __metadata("design:type", Array)
     ], AppShell.prototype, "views", void 0);
     __decorate([
-        property({ type: String }),
-        __metadata("design:type", String)
+        property({ type: Number }),
+        __metadata("design:type", Number)
     ], AppShell.prototype, "views10d", void 0);
     __decorate([
-        property({ type: String }),
-        __metadata("design:type", String)
+        property({ type: Number }),
+        __metadata("design:type", Number)
     ], AppShell.prototype, "views24h", void 0);
     __decorate([
         property({ type: Array }),
