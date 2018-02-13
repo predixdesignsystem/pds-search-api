@@ -54,7 +54,8 @@
         const created = child._createdAt;
         const detail = child.resultsCount === 1 ? `${child.resultsCount} result` : `${child.resultsCount} results`;
         const type = child.resultsCount > 0 ? 'info' : 'important';
-        this.searches = [{label, value, created, detail, type}, ...this.searches];
+        const animal = gaToAnonAnimal(child._ga);
+        this.searches = [{label, value, created, detail, type, animal}, ...this.searches];
       });
 
       /* Listen for new view events and add them to the page */
@@ -64,7 +65,8 @@
         const label = pathToSectionTitle(child.path);
         const value = child.name;
         const created = child._createdAt;
-        this.views = [{label, value, created}, ...this.views];
+        const animal = gaToAnonAnimal(child._ga);
+        this.views = [{label, value, created, animal}, ...this.views];
       });
 
       /* Fetch stats for the last 10 days */
@@ -126,4 +128,209 @@
     return 'Unknown';
   }
 
+  
+  interface AnonAnimalCache {
+    [key: string]: AnonAnimal;
+  }
+
+  const anonAnimalCache: AnonAnimalCache = {}
+
+  const animals = [
+    'alligator',
+    'anteater',
+    'armadillo',
+    'auroch',
+    'axolotl',
+    'badger',
+    'bat',
+    'beaver',
+    'buffalo',
+    'camel',
+    'capybara',
+    'chameleon',
+    'cheetah',
+    'chinchilla',
+    'chipmunk',
+    'chupacabra',
+    'cormorant',
+    'coyote',
+    'crow',
+    'dingo',
+    'dinosaur',
+    'dolphin',
+    'duck',
+    'elephant',
+    'ferret',
+    'fox',
+    'frog',
+    'giraffe',
+    'gopher',
+    'grizzly',
+    'hedgehog',
+    'hippo',
+    'hyena',
+    'ibex',
+    'ifrit',
+    'iguana',
+    'jackal',
+    'kangaroo',
+    'koala',
+    'kraken',
+    'lemur',
+    'leopard',
+    'liger',
+    'llama',
+    'manatee',
+    'mink',
+    'monkey',
+    'moose',
+    'narwhal',
+    'orangutan',
+    'otter',
+    'panda',
+    'penguin',
+    'platypus',
+    'pumpkin',
+    'python',
+    'quagga',
+    'rabbit',
+    'raccoon',
+    'rhino',
+    'sheep',
+    'shrew',
+    'skunk',
+    'squirrel',
+    'tiger',
+    'turtle',
+    'walrus',
+    'wolf',
+    'wolverine',
+    'wombat'
+  ]
+
+  const colors = [
+    'Aqua',
+    'Black',
+    'Blue',
+    'BlueViolet',
+    'Brown',
+    'CadetBlue',
+    'Chocolate',
+    'Coral',
+    'CornflowerBlue',
+    'Crimson',
+    'DarkBlue',
+    'DarkCyan',
+    'DarkGoldenRod',
+    'DarkGreen',
+    'DarkKhaki',
+    'DarkMagenta',
+    'DarkOliveGreen',
+    'Darkorange',
+    'DarkOrchid',
+    'DarkRed',
+    'DarkSalmon',
+    'DarkSeaGreen',
+    'DarkSlateBlue',
+    'DarkSlateGray',
+    'DarkSlateGrey',
+    'DarkTurquoise',
+    'DarkViolet',
+    'DeepPink',
+    'DeepSkyBlue',
+    'DimGray',
+    'DimGrey',
+    'DodgerBlue',
+    'FireBrick',
+    'ForestGreen',
+    'Fuchsia',
+    'GoldenRod',
+    'Gray',
+    'Grey',
+    'Green',
+    'HotPink',
+    'IndianRed',
+    'Indigo',
+    'Magenta',
+    'Maroon',
+    'MediumBlue',
+    'MediumOrchid',
+    'MediumPurple',
+    'MediumSeaGreen',
+    'MediumSlateBlue',
+    'MediumVioletRed',
+    'MidnightBlue',
+    'Navy',
+    'Olive',
+    'OliveDrab',
+    'Orange',
+    'OrangeRed',
+    'Orchid',
+    'PaleVioletRed',
+    'Peru',
+    'Pink',
+    'Plum',
+    'Purple',
+    'Red',
+    'RosyBrown',
+    'RoyalBlue',
+    'SaddleBrown',
+    'Salmon',
+    'SandyBrown',
+    'SeaGreen',
+    'Sienna',
+    'SlateBlue',
+    'SlateGray',
+    'SlateGrey',
+    'SteelBlue',
+    'Tan',
+    'Teal',
+    'Tomato',
+    'Turquoise',
+    'Violet',
+    'Yellow',
+    'YellowGreen'
+  ]
+
+  /**
+   * Takes a Google Analytics key and returns a unique
+   * animal and color for this session.
+   */
+  function gaToAnonAnimal(key: string): AnonAnimal {
+    if (anonAnimalCache[key]) {
+      return anonAnimalCache[key];
+    }
+    let animal = getRandomAnimal();
+    while (isAnimalUsed(animal, anonAnimalCache)) {
+      animal = getRandomAnimal();
+    }
+    anonAnimalCache[key] = animal;
+    return animal;
+  }
+
+  /** Checks if the anonymous animal is already in use */
+  function isAnimalUsed(animal: AnonAnimal, cache: AnonAnimalCache): boolean {
+    const _animal = JSON.stringify(animal);
+    const keys = Object.keys(cache);
+    for (let i=0; i<keys.length; i++) {
+      if (JSON.stringify(cache[keys[i]]) === _animal) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /** Generates a random anonymous animal */
+  function getRandomAnimal(): AnonAnimal {
+    return {
+      name: getRandomEntry(animals),
+      color: getRandomEntry(colors)
+    }
+  }
+
+  /** Gets a random entry from an array */
+  function getRandomEntry(arr: string[]): string {
+    return arr[Math.floor(Math.random()*arr.length)]
+  }
 }
+

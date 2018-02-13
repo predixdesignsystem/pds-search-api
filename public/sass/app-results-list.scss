@@ -41,6 +41,7 @@
   padding: .5rem 1rem;
   margin-bottom: .5rem;
   background-color: $gray14;
+  position: relative;
 }
 .result-item--important {
   background-color: $red8;
@@ -72,4 +73,16 @@
 .result-item-detail > p {
   font-size: 0.8rem;
   margin: 0;
+}
+
+.result-item-animal {
+  display: block;
+  width: 35px;
+  height: 35px;
+  border-radius: 100%;
+  position: absolute;
+  top: 2px;
+  right: -15px;
+  background-size: 125%;
+  background-repeat: no-repeat;
 }
