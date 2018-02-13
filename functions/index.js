@@ -170,7 +170,11 @@ const toValues = o => {
 /* Helper function: reduce entries to a count */
 const reduceByVal = (arr, key) => {
   let results = arr.map(v => v[key]).reduce((acc, val) => {
-    if (!acc[val]) acc[val] = {"key":val, "count":0};
+    if (!acc[val]) {
+      acc[val] = {};
+      acc[val][key] = val;
+      acc[val]['count'] = 0;
+    }
     acc[val].count++;
     return acc;
   }, {});
@@ -179,15 +183,70 @@ const reduceByVal = (arr, key) => {
   return results;
 };
 
-exports.mostViewed10 = functions.https.onRequest((req, res) => {
+/* Capitalizes the first letter of a string and returns it. */
+const capitalize = str => str[0].toUpperCase() + str.slice(1);
+
+/* Turns page paths into human-readable section titles for the website. */
+const pathToSectionTitle = path => {
+  const section = path.split('/')[2];
+  if (section) {
+    if (section === 'elements') {
+      return 'Component Docs';
+    }
+    if (section === 'css') {
+      return 'CSS Docs';
+    }
+    if (section === 'develop') {
+      return 'Developer Guides';
+    }
+    if (section === 'design') {
+      return 'Design Guidelines';
+    }
+    if (section === 'about') {
+      return 'Getting Started';
+    }
+    return capitalize(section);
+  }
+  return 'Unknown';
+}
+
+/*
+ * Returns interesting stats for the last 10 days.
+ *
+ * GET /stats10d/
+ *
+ * RESPONSE (200):
+ *
+ *     {
+ *       "totalViews10d": 3487,
+ *       "totalViews24h": 104,
+ *       "topPages10d": [
+ *         { "name": "Home", "count": 110 },
+ *         ... 25 results ...
+ *       ],
+ *       "topSections": [
+ *         { "section": "Developer Guides", count: 30 },
+ *         ... more results ...
+ *       ]
+ *     }
+ *
+ */
+exports.stats10d = functions.https.onRequest((req, res) => {
   const ref = admin.database().ref('/view');
-  const milli10DaysAgo = Date.now() - daysToMilli(10);
-  ref.orderByChild('_createdAt').startAt(milli10DaysAgo).once('value', snapshot => {
+  const milliTenDaysAgo = Date.now() - daysToMilli(10);
+  const milliOneDayAgo = Date.now() - hoursToMilli(24);
+  ref.orderByChild('_createdAt').startAt(milliTenDaysAgo).once('value', snapshot => {
     const views = toValues(snapshot.val());
     const topViews = reduceByVal(views, 'name');
+    const topSections = reduceByVal(
+      views.map(v => Object.assign({}, v, { section: pathToSectionTitle(v.path) })), 'section'
+    );
+    const views24h = views.filter(v => v._createdAt > milliOneDayAgo);
     res.json({
-      totalCount: views.length,
-      top: topViews.slice(0,25)
+      "totalViews10d" : views.length,
+      "topPages10d" : topViews.slice(0,25),
+      "topSections10d" : topSections,
+      "totalViews24h" : views24h.length
     });
   });
 });
