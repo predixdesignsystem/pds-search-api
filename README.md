@@ -3,11 +3,11 @@
 This repo hosts two codebases:
 
 1. A set of Firebase functions that are used to collect user view and search events from the [Predix Design System](https://www.predix-ui.com) website
-2. A [realtime dashboard](http://pds-search-api.firebaseapp.com/) that displays those metrics in realtime hosted on the Firebase static web server
+2. A [real-time dashboard](http://pds-search-api.firebaseapp.com/) that displays those metrics in real-time, hosted on the Firebase static web server
 
 ![Dashboard Screenshot](screenshot.png)
 
-The code that observers user actions and generates API requests to the view/search function endpoints is in the [Predix UI website repo](https://github.com/predix-ui/predix-ui.github.io). A [snapshot of the code is here](https://github.com/predix-ui/predix-ui.github.io/blob/472549814fca31b38c52e2ece298332a1d5226bf/elements/px-catalog/px-catalog.html#L421-L504). It may have been moved somewhere else in the repo.
+The code that observes user actions and generates API requests to the view/search function endpoints is in the [Predix UI website repo](https://github.com/predix-ui/predix-ui.github.io). A [snapshot of the code is here](https://github.com/predix-ui/predix-ui.github.io/blob/472549814fca31b38c52e2ece298332a1d5226bf/elements/px-catalog/px-catalog.html#L421-L504). It may have been moved somewhere else in the repo.
 
 ## Develop and deploy
 
@@ -36,7 +36,7 @@ The functions and dashboard code are essentially two separate codebases sharing 
 
 ### Develop functions
 
-Before getting started you should take a look at the [Firebase Functions documentation](https://firebase.google.com/docs/functions/) and familiarize yourself with the basic concepts for Firebase functions. You don't need to read the whole thing, but you should be able to answer "What is a Firebase function?" and "How do I write one, and how do I call one from my code?".
+Before getting started, you should take a look at the [Firebase Functions documentation](https://firebase.google.com/docs/functions/) and familiarize yourself with the basic concepts for Firebase functions. You don't need to read the whole thing, but you should be able to answer "What is a Firebase function?," "How do I write one?," and "How do I call one from my code?".
 
 **Start developing:**
 
@@ -69,7 +69,7 @@ $ firebase deploy --only functions
 
 ### Develop dashboard
 
-The dashboard code is a static website served through Firebase. It is built using Polymer 2.0 as a JavaScript framework. The code is written in TypeScript and compiled to JavaScript before it is checked in. It relies on the [polymer-decorators](https://github.com/Polymer/polymer-decorators), which exposes decorators for writing Polymer 2.0 components. You should read up on the basic of [Typescript](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes.html) and glance at the [polymer-decorators](https://github.com/Polymer/polymer-decorators) before getting started. It is assumed you already have experience developing Polymer-based components and applications (if you don't take a look at the [Polymer docs](https://www.polymer-project.org/)).
+The dashboard code is a static website served through Firebase. It is built using Polymer 2.0 as a JavaScript framework. The code is written in TypeScript and compiled to JavaScript before it is checked in. It relies on [polymer-decorators](https://github.com/Polymer/polymer-decorators), which exposes decorators for writing Polymer 2.0 components. You should read up on the basics of [Typescript](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes.html) and glance at [polymer-decorators](https://github.com/Polymer/polymer-decorators) before getting started. It is assumed you already have experience developing Polymer-based components and applications (if you don't, take a look at the [Polymer docs](https://www.polymer-project.org/)).
 
 
 **Start developing:**
@@ -111,7 +111,7 @@ $ gulp # builds files once
 
 ```
 $ firebase login
-$ firebase deploy
+$ firebase deploy --only hosting
 ```
 
 ## Support and further information
@@ -120,6 +120,6 @@ If you find any bugs, have issues with the code, or want to request enhancements
 
 ## Copyright
 
-Copyright &copy; 2018 GE Global Research. All rights reserved.
+Copyright &copy; 2018 GE Digital. All rights reserved.
 
-The copyright to the computer software herein is the property of GE Global Research. The software may be used and/or copied only with the written permission of GE Global Research or in accordance with the terms and conditions stipulated in the agreement/contract under which the software has been supplied.
+The copyright to the computer software herein is the property of GE Digital. The software may be used and/or copied only with the written permission of GE Digital or in accordance with the terms and conditions stipulated in the agreement/contract under which the software has been supplied.
