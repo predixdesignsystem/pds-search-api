@@ -41,38 +41,20 @@
     const years = Math.floor(seconds / 31536000);
     const months = Math.floor(seconds / 2592000);
     const days = Math.floor(seconds / 86400);
-  
-    if (days > 548) {
-      return years + ' years ago';
-    }
-    if (days >= 320 && days <= 547) {
-      return 'a year ago';
-    }
-    if (days >= 45 && days <= 319) {
-      return months + ' months ago';
-    }
-    if (days >= 26 && days <= 45) {
-      return 'a month ago';
-    }
-  
     const hours = Math.floor(seconds / 3600);
-  
-    if (hours >= 36 && days <= 25) {
-      return days + ' days ago';
-    }
-    if (hours >= 22 && hours <= 35) {
-      return 'a day ago';
-    }
-  
     const minutes = Math.floor(seconds / 60);
-  
-    if (minutes >= 90 && hours <= 21) {
-      return hours + ' hours ago';
-    }
-    if (seconds >= 90 && minutes <= 89) {
-      return 'last hour';
-    }
-  
+
+    if (days > 548)                   return `${years} ${this.localize('years ago')}`;
+    if (days >= 320 && days <= 547)   return this.localize('a year ago');
+    if (days >= 45 && days <= 319)    return `${months} ${this.localize('months ago')}`;
+    if (days >= 26 && days <= 45)     return this.localize('a month ago');
+    if (hours >= 36 && days <= 25)    return `${days} ${this.localize('days ago')}`;
+    if (hours >= 22 && hours <= 35)   return this.localize('a day ago');
+    if (minutes >= 90 && hours <= 21) return `${hours} ${this.localize('hours ago')}`;
+    if (minutes >= 45 && minutes <= 89) return this.localize('an hour ago');
+    if (seconds >= 90 && minutes <= 44) return `${minutes} ${this.localize('minutes ago')}`;
+    if (seconds >= 45 && seconds <= 89) return this.localize('a minute ago');
+    if (seconds >= 0 && seconds <= 45)  return this.localize('a few seconds ago');
     return 'just now';
   }
 }
