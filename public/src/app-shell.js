@@ -55,6 +55,10 @@ var __metadata = (this && this.__metadata) || function (k, v) {
                 .then((data) => {
                 this.views10d = this.views10d + data.totalViews10d;
                 this.views24h = this.views24h + data.totalViews24h;
+                if (data.topPages10d[0].name === 'Home') {
+                    /* Remove home from the top pages reponse to it does not skew the chart */
+                    data.topPages10d = data.topPages10d.slice(1);
+                }
                 this.topPages = data.topPages10d;
                 this.topSections = data.topSections10d;
                 statsInitialized = true;
