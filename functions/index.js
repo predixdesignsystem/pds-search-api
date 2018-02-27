@@ -220,11 +220,13 @@ const pathToSectionTitle = path => {
  *     {
  *       "totalViews10d": 3487,
  *       "totalViews24h": 104,
+ *       "users10d": 1049,
+ *       "users24h": 49,
  *       "topPages10d": [
  *         { "name": "Home", "count": 110 },
  *         ... 25 results ...
  *       ],
- *       "topSections": [
+ *       "topSections10d": [
  *         { "section": "Developer Guides", count: 30 },
  *         ... more results ...
  *       ]
@@ -243,11 +245,15 @@ exports.stats10d = functions.https.onRequest((req, res) => {
         views.map(v => Object.assign({}, v, { section: pathToSectionTitle(v.path) })), 'section'
       );
       const views24h = views.filter(v => v._createdAt > milliOneDayAgo);
+      const users10d = reduceByVal(views, '_ga');
+      const users24h = reduceByVal(views24h, '_ga');
       res.json({
         "totalViews10d" : views.length,
+        "totalViews24h" : views24h.length,
+        "users10d" : users10d.length,
+        "users24h" : users24h.length,
         "topPages10d" : topViews.slice(0,25),
-        "topSections10d" : topSections,
-        "totalViews24h" : views24h.length
+        "topSections10d" : topSections
       });
     });
   });
